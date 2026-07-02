@@ -3973,9 +3973,10 @@ function consulta_cliente (){
       v_fecha_error             DATE;
       v_mensaje_personalizado   VARCHAR2 (4000);
       v_error                   VARCHAR2 (2000);
-      v_valor                   BOOLEAN;
-      v_factor                  NUMBER := 1;
-      contadorlibros            NUMBER;
+      -- v_valor, v_factor, contadorlibros ya no se usan (precio viene de pade_monto_local)
+      -- v_valor                   BOOLEAN;
+      -- v_factor                  NUMBER := 1;
+      -- contadorlibros            NUMBER;
 
       --cursor de deudas en tabla temporal, agrupada por tipo
       CURSOR c_deudas_actuales (p_idcliente NUMERIC)
@@ -3994,35 +3995,55 @@ function consulta_cliente (){
                 AND pade_tipo_documento = p_tipo_doc
                 AND pa_nro_operacion = p_num_op;
 
+      -- BUG ORIGINAL (comentado 02/07/2026):
+      -- 1) p_id_venta era NUMBER pero vent_codigo es VARCHAR2 (conversión implícita)
+      -- 2) JOIN con pove_cliente generaba filas duplicadas (clie_codigo = vent_codigo)
+      -- 3) prod_precio_impuesto es NULL en pove_producto_tl; se usaba prod_precio * v_factor
+      --    lo que no corresponde al monto real pagado por el cliente
+      --CURSOR c_deudas_ventas (
+      --   p_id_venta    NUMBER)
+      ----cursor alan
+      --IS
+      --   SELECT c.clie_codigo,
+      --          c.clie_rut,
+      --          v.vent_codigo,
+      --          p.prod_codigo_sap,
+      --          p.prod_nombre,
+      --          v.vent_total,
+      --          vd.vede_cantidad,
+      --          p.prod_precio AS prod_precio_impuesto   -- prod_precio_impuesto = NULL
+      --     FROM vec_cob03.pove_venta         v,
+      --          vec_cob03.pove_venta_detalle vd,
+      --          vec_cob03.pove_producto_tl   p,
+      --          vec_cob03.pove_cliente       c           -- generaba duplicados
+      --    WHERE     v.vent_codigo = vd.vent_codigo
+      --          AND p.prod_codigo = vd.prod_codigo
+      --          AND c.clie_codigo = v.clie_codigo
+      --          AND v.vent_codigo = p_id_venta;
+
+      -- CURSOR CORREGIDO 02/07/2026:
+      -- - Parámetro VARCHAR2 (coincide con tipo de vent_codigo)
+      -- - Sin join a pove_cliente (ya viene pa_rut desde cursor padre)
+      -- - Sin join a pove_venta (vent_total no se usa; el monto viene de pade_monto_local)
       CURSOR c_deudas_ventas (
-         p_id_venta    NUMBER)
-      --cursor alan
+         p_id_venta    VARCHAR2)
       IS
-         SELECT c.clie_codigo,
-                c.clie_rut,
-                v.vent_codigo,
-                p.prod_codigo_sap,
+         SELECT p.prod_codigo_sap,
                 p.prod_nombre,
-                v.vent_total,
-                vd.vede_cantidad, --getnetofromtotal(v.vent_total) prod_precio_impuesto
-                --p.prod_precio_impuesto
-                -- 17.01.2025 AlAN Riquelme - cambio de precio sin iva por precio nor
-                p.prod_precio AS prod_precio_impuesto
-           FROM vec_cob03.pove_venta         v,
-                vec_cob03.pove_venta_detalle vd,
-                vec_cob03.pove_producto_tl   p,
-                vec_cob03.pove_cliente       c
-          WHERE     v.vent_codigo = vd.vent_codigo
-                AND p.prod_codigo = vd.prod_codigo
-                AND c.clie_codigo = v.clie_codigo
-                AND v.vent_codigo = p_id_venta;
+                vd.vede_cantidad,
+                vd.vede_sub_total,
+                vd.vede_despacho
+           FROM vec_cob03.pove_venta_detalle vd
+           JOIN vec_cob03.pove_producto_tl   p ON p.prod_codigo = vd.prod_codigo
+          WHERE vd.vent_codigo = p_id_venta;
 
       p_nro_cuota               NUMBER;
       id_log                    NUMBER;
       v_posicion_item           NUMBER := 0;
       v_valor_final             NUMBER;
-      v_despacho_sap            NUMBER;
-      V_MONTO_FINAL_SAP         NUMBER;
+      -- v_despacho_sap y V_MONTO_FINAL_SAP ya no se usan (precio viene de pade_monto_local)
+      -- v_despacho_sap            NUMBER;
+      -- V_MONTO_FINAL_SAP         NUMBER;
    BEGIN
       p_ret := 'S';
 
@@ -4076,55 +4097,27 @@ function consulta_cliente (){
 
                   v_json := v_line;
                   v_line := '';
-                  v_valor :=
-                     vec_cob03.venta_online.get_esutalca (p_idcliente);
+                  -- Lógica de descuento reemplazada 02/07/2026: el precio correcto es pade_monto_local
+                  -- (refleja el monto real pagado por Webpay; ya incluye despacho y descuento).
+                  -- v_valor := vec_cob03.venta_online.get_esutalca (p_idcliente);
+                  -- IF v_valor THEN v_factor := 0.7; ELSE v_factor := 0.9; END IF;
 
-                  IF v_valor
-                  THEN
-                     v_factor := 0.7;
-                  ELSE
-                     v_factor := 0.9;
-                  END IF;
-
-                  /*  INSERT INTO vec_cob03.TMP_DATOS
-                      (
-                          VALOR_1,
-                          VALOR_2,
-                          VALOR_3
-                      )
-                VALUES ('JSONSAP',  v_factor,p_idcliente);*/
-
-                  contadorlibros := 1;
+                  -- contadorlibros ya no se necesita (precio viene de pade_monto_local)
+                  -- contadorlibros := 1;
 
                   --DETALLE DE LOS LIBROS
                   FOR reg_sap IN c_deudas_ventas (reg.pade_nro_documento)
                   LOOP
-                     IF contadorlibros = 1
-                     THEN
-                        /*11.12.2024 ARI Se grega calculo de despacho el cual se sumara a la primera linea*/
-                        v_despacho_sap :=
-                           pkg_integra_utal.f_calculadespacho_sap (
-                              reg.pade_nro_documento);
-                        v_valor_final :=
-                           ROUND (
-                                reg_sap.prod_precio_impuesto * v_factor
-                              + v_despacho_sap,
-                              0);
-                     ELSE
-                        v_valor_final :=
-                           ROUND (reg_sap.prod_precio_impuesto * v_factor, 0);
-                     END IF;
-
-                     contadorlibros := contadorlibros + 1;
-                     /*    INSERT INTO vec_cob03.tmp_datos (
-                             valor_1,
-                             valor_2,
-                             valor_3
-                         ) VALUES (
-                             'JSONSAP_ciclo',
-                             v_factor,
-                             v_valor_final
-                         );*/
+                      -- PRECIO CORREGIDO 02/07/2026:
+                      -- Se usa pade_monto_local del cursor padre (monto real pagado por Webpay).
+                      -- Lógica original comentada:
+                      -- IF contadorlibros = 1 THEN
+                      --    v_despacho_sap := pkg_integra_utal.f_calculadespacho_sap(reg.pade_nro_documento);
+                      --    v_valor_final  := ROUND(reg_sap.prod_precio_impuesto * v_factor + v_despacho_sap, 0);
+                      -- ELSE
+                      --    v_valor_final  := ROUND(reg_sap.prod_precio_impuesto * v_factor, 0);
+                      -- END IF;
+                      v_valor_final := reg.pade_monto_local;
 
                      v_posicion_item := v_posicion_item + 10;
                      v_line :=
