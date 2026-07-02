@@ -4022,10 +4022,34 @@ function consulta_cliente (){
       --          AND c.clie_codigo = v.clie_codigo
       --          AND v.vent_codigo = p_id_venta;
 
-      -- CURSOR CORREGIDO 02/07/2026:
-      -- - Parámetro VARCHAR2 (coincide con tipo de vent_codigo)
-      -- - Sin join a pove_cliente (ya viene pa_rut desde cursor padre)
-      -- - Sin join a pove_venta (vent_total no se usa; el monto viene de pade_monto_local)
+      -- =================================================================================
+      -- HISTORIAL DE CAMBIOS Y CORRECCIÓN DE BUGS - 02/07/2026
+      -- =================================================================================
+      -- AUTOR: Jaime / Antigravity AI
+      -- MOTIVO: Corrección del flujo de integración SAP (SD VENTA) desde el Portal Editorial.
+      -- 
+      -- BUGS DETECTADOS Y SOLUCIONADOS:
+      -- 1) Duplicación de Ítems: El cursor original hacía un JOIN con 'pove_cliente' usando
+      --    'c.clie_codigo = v.clie_codigo'. En QA, 'clie_codigo' y 'vent_codigo' coinciden
+      --    numéricamente en 'pove_venta', lo que causaba filas duplicadas y multiplicaba los
+      --    libros en el JSON enviado a SAP. 
+      --    Solución: Se removió el JOIN con 'pove_cliente' (el RUT ya está en 'reg.pa_rut').
+      -- 
+      -- 2) Precios Incorrectos: La tabla 'pove_producto_tl' posee el campo 'prod_precio_impuesto'
+      --    en NULL, lo que enviaba valores vacíos a SAP. Además, la lógica original intentaba
+      --    recalcular el precio aplicando descuentos/despacho en código PL/SQL, pero la tabla
+      --    'pove_venta_detalle' registra subtotales erróneos repetidos (multiplicando el valor
+      --    total por la cantidad de libros si hay más de uno).
+      --    Solución: Se implementó un algoritmo matemático de prorrateo proporcional.
+      --    Se toma el total exacto pagado por Webpay ('pove_venta.vent_total') y se divide de
+      --    forma proporcional según los precios de catálogo de cada libro de la compra.
+      --    La última fila del loop absorbe la diferencia por redondeos para asegurar una cuadratura
+      --    perfecta peso a peso.
+      -- 
+      -- 3) Tipo de Dato del Parámetro: El parámetro 'p_id_venta' del cursor era NUMBER, pero
+      --    'vent_codigo' es VARCHAR2, lo que forzaba una conversión implícita ineficiente.
+      --    Solución: Cambiado a VARCHAR2.
+      -- =================================================================================
       CURSOR c_deudas_ventas (
          p_id_venta    VARCHAR2)
       IS
@@ -4100,7 +4124,12 @@ function consulta_cliente (){
                   v_json := v_line;
                   v_line := '';
                   
-                                    -- OBTENER DATOS PARA EL PRORRATEO (02/07/2026):
+                                    -- ===========================================================================
+                   -- OBTENER DATOS PARA EL PRORRATEO (02/07/2026 Jaime / Antigravity AI)
+                   -- Dado que para SAP es indispensable el detalle y la exactitud del monto total
+                   -- de la venta (Webpay), se calcula la proporción que representa cada libro en
+                   -- el catálogo y se prorratea el monto de vent_total.
+                   -- ===========================================================================
                   -- 1. Obtener vent_total de cabecera
                   BEGIN
                      SELECT vent_total INTO v_total_venta
