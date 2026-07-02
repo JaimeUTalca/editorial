@@ -4010,7 +4010,8 @@ function consulta_cliente (){
       --          p.prod_codigo_sap,
       --          p.prod_nombre,
       --          v.vent_total,
-      --          vd.vede_cantidad,
+      --          p.prod_precio,
+                vd.vede_cantidad,
       --          p.prod_precio AS prod_precio_impuesto   -- prod_precio_impuesto = NULL
       --     FROM vec_cob03.pove_venta         v,
       --          vec_cob03.pove_venta_detalle vd,
@@ -4030,6 +4031,7 @@ function consulta_cliente (){
       IS
          SELECT p.prod_codigo_sap,
                 p.prod_nombre,
+                p.prod_precio,
                 vd.vede_cantidad,
                 vd.vede_sub_total,
                 vd.vede_despacho
@@ -4098,18 +4100,66 @@ function consulta_cliente (){
                   v_json := v_line;
                   v_line := '';
                   
+                                    -- OBTENER DATOS PARA EL PRORRATEO (02/07/2026):
+                  -- 1. Obtener vent_total de cabecera
                   BEGIN
-                     SELECT vent_total INTO v_valor_final
+                     SELECT vent_total INTO v_total_venta
                      FROM vec_cob03.pove_venta
                      WHERE vent_codigo = reg.pade_nro_documento
                        AND ROWNUM = 1;
                   EXCEPTION WHEN OTHERS THEN
-                     v_valor_final := reg.pade_monto_local;
+                     v_total_venta := reg.pade_monto_local;
                   END;
 
-                  --DETALLE DE LOS LIBROS
+                  -- 2. Obtener la suma total de precios de catálogo
+                  BEGIN
+                     SELECT SUM(p.prod_precio * vd.vede_cantidad) INTO v_suma_precios_catalogo
+                     FROM vec_cob03.pove_venta_detalle vd
+                     JOIN vec_cob03.pove_producto_tl p ON p.prod_codigo = vd.prod_codigo
+                     WHERE vd.vent_codigo = reg.pade_nro_documento;
+                  EXCEPTION WHEN OTHERS THEN
+                     v_suma_precios_catalogo := 0;
+                  END;
+
+                  -- 3. Obtener cantidad de ítems en el detalle
+                  BEGIN
+                     SELECT COUNT(*) INTO v_total_filas_detalle
+                     FROM vec_cob03.pove_venta_detalle vd
+                     WHERE vd.vent_codigo = reg.pade_nro_documento;
+                  EXCEPTION WHEN OTHERS THEN
+                     v_total_filas_detalle := 0;
+                  END;
+
+                  v_monto_acumulado := 0;
+                  v_contador_loop := 0;
+
+                  --DETALLE DE LOS LIBROS (PRORRATEADO)
                   FOR reg_sap IN c_deudas_ventas (reg.pade_nro_documento)
                   LOOP
+                     v_contador_loop := v_contador_loop + 1;
+                     
+                     -- Calcular valor prorrateado
+                     IF v_suma_precios_catalogo > 0 AND v_total_venta > 0 THEN
+                        IF v_contador_loop < v_total_filas_detalle THEN
+                           v_valor_final := ROUND(((NVL(reg_sap.prod_precio, 0) * NVL(reg_sap.vede_cantidad, 1)) / v_suma_precios_catalogo) * v_total_venta, 0);
+                           v_monto_acumulado := v_monto_acumulado + v_valor_final;
+                        ELSE
+                           v_valor_final := v_total_venta - v_monto_acumulado;
+                        END IF;
+                     ELSE
+                        -- Fallback si no hay precios de catálogo
+                        IF v_total_filas_detalle > 0 THEN
+                           IF v_contador_loop < v_total_filas_detalle THEN
+                              v_valor_final := ROUND(v_total_venta / v_total_filas_detalle, 0);
+                              v_monto_acumulado := v_monto_acumulado + v_valor_final;
+                           ELSE
+                              v_valor_final := v_total_venta - v_monto_acumulado;
+                           END IF;
+                        ELSE
+                           v_valor_final := v_total_venta;
+                        END IF;
+                     END IF;
+
                      v_posicion_item := v_posicion_item + 10;
                      v_line :=
                            ' "ORDER_ITEMS_IN": {
@@ -4158,8 +4208,8 @@ function consulta_cliente (){
                         || reg.pade_fec_vencimiento
                         || '",
                                         "Cantidad_pedida": "1"
-                              },
-                          "ORDER_CONDITIONS_IN": {
+                               },
+                           "ORDER_CONDITIONS_IN": {
                                         "Numero_posicion_condicion": "'
                         || v_posicion_item
                         || '",
@@ -4174,8 +4224,6 @@ function consulta_cliente (){
                      p_nro_cuota := p_nro_cuota + 10;
                      v_json := v_json || v_line;
                      v_line := '';
-                     -- Se sale después de la primera línea porque a SAP solo le importa el total general de la venta
-                     EXIT;
                   END LOOP;
                END LOOP;
             END LOOP;
