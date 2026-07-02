@@ -3993,6 +3993,12 @@ function consulta_cliente (){
       id_log                    NUMBER;
       v_posicion_item           NUMBER := 0;
       v_valor_final             NUMBER;
+      -- Variables para el cálculo de prorrateo del total de venta en SAP (02/07/2026):
+      v_suma_precios_catalogo   NUMBER;
+      v_total_filas_detalle     NUMBER;
+      v_monto_acumulado         NUMBER := 0;
+      v_contador_loop           NUMBER := 0;
+      v_total_venta             NUMBER;
       -- v_despacho_sap y V_MONTO_FINAL_SAP ya no se usan (precio viene de pade_monto_local)
       -- v_despacho_sap            NUMBER;
       -- V_MONTO_FINAL_SAP         NUMBER;
