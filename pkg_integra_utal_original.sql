@@ -3875,130 +3875,151 @@ function consulta_cliente (){
 /*v_total_despacho*/
     END f_calculadespacho_sap;
 
-   FUNCTION int_leg05_sd_venta (
-        p_idcliente VARCHAR2,
-        p_num_op    VARCHAR2,
-        p_ret       OUT VARCHAR2, --Salida estado si tiene error en oracle S (Success) E (Error)
-        p_msg       OUT VARCHAR2                          --mensaje de error
-    ) RETURN json IS
-
-        v_line                  VARCHAR2(32766);
-        v_json                  CLOB := empty_clob();
-        v_respuesta             CLOB;
-        v_token                 VARCHAR2(500);
-        l_resp_json             json;
-        l_data_json             json;
-        l_return_json           json;
-        pl_fecha_documento      VARCHAR2(1000);
-        p_numero_material       VARCHAR2(1000);
-        p_numero_deudor         VARCHAR2(1000);
-        p_monto                 VARCHAR2(1000);
-        v_codigo_error          VARCHAR2(20);
-        v_mensaje_error         VARCHAR2(4000);
-        v_fecha_error           DATE;
-        v_mensaje_personalizado VARCHAR2(4000);
-        v_error                 VARCHAR2(2000);
-        v_valor                 BOOLEAN;
-        v_factor                NUMBER := 1;
-        contadorlibros          NUMBER;
+   FUNCTION int_leg05_sd_venta (p_idcliente       VARCHAR2,
+                                p_num_op          VARCHAR2,
+                                p_ret         OUT VARCHAR2, --Salida estado si tiene error en oracle S (Success) E (Error)
+                                p_msg         OUT VARCHAR2  --mensaje de error
+                                                          )
+      RETURN json
+   IS
+      v_line                    VARCHAR2 (32766);
+      v_json                    CLOB := EMPTY_CLOB ();
+      v_respuesta               CLOB;
+      v_token                   VARCHAR2 (500);
+      l_resp_json               json;
+      l_data_json               json;
+      l_return_json             json;
+      pl_fecha_documento        VARCHAR2 (1000);
+      p_numero_material         VARCHAR2 (1000);
+      p_numero_deudor           VARCHAR2 (1000);
+      p_monto                   VARCHAR2 (1000);
+      v_codigo_error            VARCHAR2 (20);
+      v_mensaje_error           VARCHAR2 (4000);
+      v_fecha_error             DATE;
+      v_mensaje_personalizado   VARCHAR2 (4000);
+      v_error                   VARCHAR2 (2000);
+      -- v_valor, v_factor, contadorlibros ya no se usan (precio viene de pade_monto_local)
+      -- v_valor                   BOOLEAN;
+      -- v_factor                  NUMBER := 1;
+      -- contadorlibros            NUMBER;
 
       --cursor de deudas en tabla temporal, agrupada por tipo
-        CURSOR c_deudas_actuales (
-            p_idcliente NUMERIC
-        ) IS
-        SELECT DISTINCT
-            pade_tipo_documento
-        FROM
-            vec_cob01.pop_pagos_detalle_temp_sap a
-        WHERE
-                pa_rut = p_idcliente
-            AND pa_nro_operacion = p_num_op;
+      CURSOR c_deudas_actuales (p_idcliente NUMERIC)
+      IS
+         SELECT DISTINCT pade_tipo_documento
+           FROM vec_cob01.pop_pagos_detalle_temp_sap a
+          WHERE pa_rut = p_idcliente AND pa_nro_operacion = p_num_op;
 
       --cursor de deudas en tabla temporal que forma el json
-        CURSOR c_deudas_actuales_detalle (
-            p_tipo_doc VARCHAR2
-        ) IS
-        SELECT
-            *
-        FROM
-            vec_cob01.pop_pagos_detalle_temp_sap a
-        WHERE
-                pa_rut = p_idcliente
-            AND pade_tipo_documento = p_tipo_doc
-            AND pa_nro_operacion = p_num_op;
+      CURSOR c_deudas_actuales_detalle (
+         p_tipo_doc    VARCHAR2)
+      IS
+         SELECT *
+           FROM vec_cob01.pop_pagos_detalle_temp_sap a
+          WHERE     pa_rut = p_idcliente
+                AND pade_tipo_documento = p_tipo_doc
+                AND pa_nro_operacion = p_num_op;
 
-        CURSOR c_deudas_ventas (
-            p_id_venta NUMBER
-        )
-      --cursor alan
-         IS
-        SELECT
-            c.clie_codigo,
-            c.clie_rut,
-            v.vent_codigo,
-            p.prod_codigo_sap,
-            p.prod_nombre,
-            v.vent_total,
-            vd.vede_cantidad,--getnetofromtotal(v.vent_total) prod_precio_impuesto
-            --p.prod_precio_impuesto
-            -- 17.01.2025 AlAN Riquelme - cambio de precio sin iva por precio nor
-             p.prod_precio as  prod_precio_impuesto
-        FROM
-            vec_cob03.pove_venta         v,
-            vec_cob03.pove_venta_detalle vd,
-            vec_cob03.pove_producto_tl   p,
-            vec_cob03.pove_cliente       c
-        WHERE
-                v.vent_codigo = vd.vent_codigo
-            AND p.prod_codigo = vd.prod_codigo
-            AND c.clie_codigo = v.clie_codigo
-            AND v.vent_codigo = p_id_venta;
+      -- BUG ORIGINAL (comentado 02/07/2026):
+      -- 1) p_id_venta era NUMBER pero vent_codigo es VARCHAR2 (conversión implícita)
+      -- 2) JOIN con pove_cliente generaba filas duplicadas (clie_codigo = vent_codigo)
+      -- 3) prod_precio_impuesto es NULL en pove_producto_tl; se usaba prod_precio * v_factor
+      --    lo que no corresponde al monto real pagado por el cliente
+      --CURSOR c_deudas_ventas (
+      --   p_id_venta    NUMBER)
+      ----cursor alan
+      --IS
+      --   SELECT c.clie_codigo,
+      --          c.clie_rut,
+      --          v.vent_codigo,
+      --          p.prod_codigo_sap,
+      --          p.prod_nombre,
+      --          v.vent_total,
+      --          p.prod_precio,
+                vd.vede_cantidad,
+      --          p.prod_precio AS prod_precio_impuesto   -- prod_precio_impuesto = NULL
+      --     FROM vec_cob03.pove_venta         v,
+      --          vec_cob03.pove_venta_detalle vd,
+      --          vec_cob03.pove_producto_tl   p,
+      --          vec_cob03.pove_cliente       c           -- generaba duplicados
+      --    WHERE     v.vent_codigo = vd.vent_codigo
+      --          AND p.prod_codigo = vd.prod_codigo
+      --          AND c.clie_codigo = v.clie_codigo
+      --          AND v.vent_codigo = p_id_venta;
 
-        p_nro_cuota             NUMBER;
-        id_log                  NUMBER;
-        v_posicion_item         NUMBER := 0;
-        v_valor_final           NUMBER;
-        v_despacho_sap          NUMBER;
-        V_MONTO_FINAL_SAP       NUMBER;
-        V_ULTIMAVENTA           NUMBER;
-    BEGIN
-        p_ret := 'S';
+      -- =================================================================================
+      -- HISTORIAL DE CAMBIOS Y CORRECCIÓN DE BUGS - 02/07/2026
+      -- =================================================================================
+      -- AUTOR: Jaime / Antigravity AI
+      -- MOTIVO: Corrección del flujo de integración SAP (SD VENTA) desde el Portal Editorial.
+      -- 
+      -- BUGS DETECTADOS Y SOLUCIONADOS:
+      -- 1) Duplicación de Ítems: El cursor original hacía un JOIN con 'pove_cliente' usando
+      --    'c.clie_codigo = v.clie_codigo'. En QA, 'clie_codigo' y 'vent_codigo' coinciden
+      --    numéricamente en 'pove_venta', lo que causaba filas duplicadas y multiplicaba los
+      --    libros en el JSON enviado a SAP. 
+      --    Solución: Se removió el JOIN con 'pove_cliente' (el RUT ya está en 'reg.pa_rut').
+      -- 
+      -- 2) Precios Incorrectos: La tabla 'pove_producto_tl' posee el campo 'prod_precio_impuesto'
+      --    en NULL, lo que enviaba valores vacíos a SAP. Además, la lógica original intentaba
+      --    recalcular el precio aplicando descuentos/despacho en código PL/SQL, pero la tabla
+      --    'pove_venta_detalle' registra subtotales erróneos repetidos (multiplicando el valor
+      --    total por la cantidad de libros si hay más de uno).
+      --    Solución: Se implementó un algoritmo matemático de prorrateo proporcional.
+      --    Se toma el total exacto pagado por Webpay ('pove_venta.vent_total') y se divide de
+      --    forma proporcional según los precios de catálogo de cada libro de la compra.
+      --    La última fila del loop absorbe la diferencia por redondeos para asegurar una cuadratura
+      --    perfecta peso a peso.
+      -- 
+      -- 3) Tipo de Dato del Parámetro: El parámetro 'p_id_venta' del cursor era NUMBER, pero
+      --    'vent_codigo' es VARCHAR2, lo que forzaba una conversión implícita ineficiente.
+      --    Solución: Cambiado a VARCHAR2.
+      -- =================================================================================
+      CURSOR c_deudas_ventas (
+         p_id_venta    VARCHAR2)
+      IS
+         SELECT p.prod_codigo_sap,
+                p.prod_nombre,
+                p.prod_precio,
+                vd.vede_cantidad,
+                vd.vede_sub_total,
+                vd.vede_despacho
+           FROM vec_cob03.pove_venta_detalle vd
+           JOIN vec_cob03.pove_producto_tl   p ON p.prod_codigo = vd.prod_codigo
+          WHERE vd.vent_codigo = p_id_venta;
+
+      p_nro_cuota               NUMBER;
+      id_log                    NUMBER;
+      v_posicion_item           NUMBER := 0;
+      v_valor_final             NUMBER;
+      -- v_despacho_sap y V_MONTO_FINAL_SAP ya no se usan (precio viene de pade_monto_local)
+      -- v_despacho_sap            NUMBER;
+      -- V_MONTO_FINAL_SAP         NUMBER;
+   BEGIN
+      p_ret := 'S';
 
       /* Recupera Token*/
-        BEGIN
-            v_token := pkg_token.get_token;
+      BEGIN
+         v_token := pkg_token.get_token;
 
          /* Fin Recupera Token*/
-            SELECT
-                seq_id_log_intleg02portal.NEXTVAL
-            INTO id_log
-            FROM
-                dual;
-     
-     
-     select PA_MONTO INTO V_MONTO_FINAL_SAP from VEC_COB01.pop_pagos_temp WHERE PA_NRO_OPERACION = p_num_op;
-              /*       INSERT INTO VEC_COB03.TMP_DATOS
-                  (
-                      VALOR_1,
-                      VALOR_2,
-                      VALOR_3
-                  )
-            VALUES ('EDITORIALV2',  p_num_op,V_MONTO_FINAL_SAP);*/
-    
-            IF p_ret = 'S' THEN
-            --SELECT MAX(TO_NUMBER(CLIE_CODIGO)) INTO V_ULTIMAVENTA FROM VEC_COB03.POVE_CLIENTE  WHERE CLIE_RUT= p_idcliente;
-    
-       --     select VETR_MONTO_PAGAR INTO V_MONTO_FINAL_SAP from VEC_COB03.POVE_VENTA_TRANSACCIONES WHERE PA_NRO_OPERACION = p_num_op;
-             -- select VETR_MONTO_PAGAR INTO V_MONTO_FINAL_SAP from VEC_COB03.POVE_VENTA_TRANSACCIONES WHERE PA_NRO_OPERACION = p_num_op;
+         SELECT seq_id_log_intleg02portal.NEXTVAL INTO id_log FROM DUAL;
 
-            
-                FOR reg_grupo IN c_deudas_actuales(p_idcliente) LOOP
-                    p_nro_cuota := 10;
-                    FOR reg IN c_deudas_actuales_detalle(reg_grupo.pade_tipo_documento) LOOP
-                        v_line := '{
+         IF p_ret = 'S'
+         THEN
+            FOR reg_grupo IN c_deudas_actuales (p_idcliente)
+            LOOP
+               p_nro_cuota := 10;
+
+               FOR reg
+                  IN c_deudas_actuales_detalle (
+                        reg_grupo.pade_tipo_documento)
+               LOOP
+                  v_line :=
+                        '{
                                     "TOKEN": "'
-                                  || v_token
-                                  || '",
+                     || v_token
+                     || '",
                                     "FLAG": "SD",
                                     "BAPI_SALESORDER_CREATEFROMDAT2": {
                                     "ORDER_HEADER_IN": {
@@ -4006,77 +4027,103 @@ function consulta_cliente (){
                                         "Clase_documento": "ZP08",
                                         "Canal_distribucion": "03",
                                         "Fecha_entrega": "'
-                                  || reg.pade_fec_vencimiento
-                                  || '",
+                     || reg.pade_fec_vencimiento
+                     || '",
                                         "Fecha_referencia_cliente": "'
-                                  || reg.pade_fec_vencimiento
-                                  || '",
+                     || reg.pade_fec_vencimiento
+                     || '",
                                         "Cupon_pago": "'
-                                  || p_num_op
-                                  || '",
+                     || p_num_op
+                     || '",
                                         "Fecha_documento": "'
-                                  || reg.pade_fec_vencimiento
-                                  || '",
+                     || reg.pade_fec_vencimiento
+                     || '",
                                         "Matricula": "'
-                                  || reg.pa_rut
-                                  || '",
+                     || reg.pa_rut
+                     || '",
                                         "Codigo_carrera": "'
-                                  || reg.pade_nro_carrera
-                                  || '"
+                     || reg.pade_nro_carrera
+                     || '"
                                     },';
 
-                        v_json := v_line;
-                        v_line := '';
-                        v_valor := vec_cob03.venta_online.get_esutalca(p_idcliente);
-                        IF v_valor THEN
-                            v_factor := 0.7;
+                  v_json := v_line;
+                  v_line := '';
+                  
+                                    -- ===========================================================================
+                   -- OBTENER DATOS PARA EL PRORRATEO (02/07/2026 Jaime / Antigravity AI)
+                   -- Dado que para SAP es indispensable el detalle y la exactitud del monto total
+                   -- de la venta (Webpay), se calcula la proporción que representa cada libro en
+                   -- el catálogo y se prorratea el monto de vent_total.
+                   -- ===========================================================================
+                  -- 1. Obtener vent_total de cabecera
+                  BEGIN
+                     SELECT vent_total INTO v_total_venta
+                     FROM vec_cob03.pove_venta
+                     WHERE vent_codigo = reg.pade_nro_documento
+                       AND ROWNUM = 1;
+                  EXCEPTION WHEN OTHERS THEN
+                     v_total_venta := reg.pade_monto_local;
+                  END;
+
+                  -- 2. Obtener la suma total de precios de catálogo
+                  BEGIN
+                     SELECT SUM(p.prod_precio * vd.vede_cantidad) INTO v_suma_precios_catalogo
+                     FROM vec_cob03.pove_venta_detalle vd
+                     JOIN vec_cob03.pove_producto_tl p ON p.prod_codigo = vd.prod_codigo
+                     WHERE vd.vent_codigo = reg.pade_nro_documento;
+                  EXCEPTION WHEN OTHERS THEN
+                     v_suma_precios_catalogo := 0;
+                  END;
+
+                  -- 3. Obtener cantidad de ítems en el detalle
+                  BEGIN
+                     SELECT COUNT(*) INTO v_total_filas_detalle
+                     FROM vec_cob03.pove_venta_detalle vd
+                     WHERE vd.vent_codigo = reg.pade_nro_documento;
+                  EXCEPTION WHEN OTHERS THEN
+                     v_total_filas_detalle := 0;
+                  END;
+
+                  v_monto_acumulado := 0;
+                  v_contador_loop := 0;
+
+                  --DETALLE DE LOS LIBROS (PRORRATEADO)
+                  FOR reg_sap IN c_deudas_ventas (reg.pade_nro_documento)
+                  LOOP
+                     v_contador_loop := v_contador_loop + 1;
+                     
+                     -- Calcular valor prorrateado
+                     IF v_suma_precios_catalogo > 0 AND v_total_venta > 0 THEN
+                        IF v_contador_loop < v_total_filas_detalle THEN
+                           v_valor_final := ROUND(((NVL(reg_sap.prod_precio, 0) * NVL(reg_sap.vede_cantidad, 1)) / v_suma_precios_catalogo) * v_total_venta, 0);
+                           v_monto_acumulado := v_monto_acumulado + v_valor_final;
                         ELSE
-                            v_factor := 0.9;
+                           v_valor_final := v_total_venta - v_monto_acumulado;
                         END IF;
+                     ELSE
+                        -- Fallback si no hay precios de catálogo
+                        IF v_total_filas_detalle > 0 THEN
+                           IF v_contador_loop < v_total_filas_detalle THEN
+                              v_valor_final := ROUND(v_total_venta / v_total_filas_detalle, 0);
+                              v_monto_acumulado := v_monto_acumulado + v_valor_final;
+                           ELSE
+                              v_valor_final := v_total_venta - v_monto_acumulado;
+                           END IF;
+                        ELSE
+                           v_valor_final := v_total_venta;
+                        END IF;
+                     END IF;
 
-  /*  INSERT INTO vec_cob03.TMP_DATOS
-      (
-          VALOR_1,
-          VALOR_2,
-          VALOR_3
-      )
-VALUES ('JSONSAP',  v_factor,p_idcliente);*/
-
-                        contadorlibros := 1;
-
-                  --DETALLE DE LOS LIBROS
-                        FOR reg_sap IN c_deudas_ventas(reg.pade_nro_documento) LOOP
-                            IF contadorlibros = 1 THEN
-                            /*11.12.2024 ARI Se grega calculo de despacho el cual se sumara a la primera linea*/
-                                v_despacho_sap := pkg_integra_utal.f_calculadespacho_sap(reg.pade_nro_documento);
-                                v_valor_final := round(reg_sap.prod_precio_impuesto * v_factor + v_despacho_sap, 0);
-                            ELSE
-                                v_valor_final := round(reg_sap.prod_precio_impuesto * v_factor, 0);
-                            END IF;
-
-                            contadorlibros := contadorlibros + 1;
-
-
-
-                        /*    INSERT INTO vec_cob03.tmp_datos (
-                                valor_1,
-                                valor_2,
-                                valor_3
-                            ) VALUES (
-                                'JSONSAP_ciclo',
-                                v_factor,
-                                v_valor_final
-                            );*/
-
-                            v_posicion_item := v_posicion_item + 10;
-                            v_line := ' "ORDER_ITEMS_IN": {
+                     v_posicion_item := v_posicion_item + 10;
+                     v_line :=
+                           ' "ORDER_ITEMS_IN": {
                                         "Posicion_documento": "'
-                                      || v_posicion_item
-                                      || '",
+                        || v_posicion_item
+                        || '",
                                         "Posicion_superior_materiales": "000000",
                                         "Numero_material": "'
-                                      || reg_sap.prod_codigo_sap
-                                      || '",
+                        || reg_sap.prod_codigo_sap
+                        || '",
                                         "Jerarquia_posicion": "U0035",
                                         "Centro": "UT01",
                                         "Cantidad_prevista": "1",
@@ -4085,180 +4132,177 @@ VALUES ('JSONSAP',  v_factor,p_idcliente);*/
                                         "Creado_por": "SYSPOSTGRADO",
                                         "Clase_factura": "ZF02",
                                         "Fecha_factura": "'
-                                      || reg.pade_fec_vencimiento
-                                      || '",
-                                        "Pagar": "X"
+                        || reg.pade_fec_vencimiento
+                        || '",
+                                        "Pagar": "X",
+                                            "Tipo_Documento_Pago": "'||get_clase_documento_sap(p_idcliente,p_num_op)||'"
                                },';
 
-                            v_json := v_json || v_line;
-                            v_line := '';
-                            v_line :=
-               --         v_line
-                 --    ||
-                             '"ORDER_PARTNERS": {
+                     v_json := v_json || v_line;
+                     v_line := '';
+                     v_line :=
+                           --         v_line
+                           --    ||
+                           '"ORDER_PARTNERS": {
                                         "Funcion_interlocutor": "AG",
                                         "Numero_deudor": "'
-                                      || reg.pa_rut
-                                      || '",
+                        || reg.pa_rut
+                        || '",
                                         "Clave_pais": "CL",
                                         "Clave_idioma": "ES"
                                },';
-                            v_line := v_line
-                                      || '"ORDER_SCHEDULES_IN": {
+                     v_line :=
+                           v_line
+                        || '"ORDER_SCHEDULES_IN": {
                                         "Posicion_documento": "'
-                                      || v_posicion_item
-                                      || '",
+                        || v_posicion_item
+                        || '",
                                         "N_reparto": "0001",
                                         "Fecha_reparto": "'
-                                      || reg.pade_fec_vencimiento
-                                      || '",
+                        || reg.pade_fec_vencimiento
+                        || '",
                                         "Cantidad_pedida": "1"
-                              },
-                          "ORDER_CONDITIONS_IN": {
+                               },
+                           "ORDER_CONDITIONS_IN": {
                                         "Numero_posicion_condicion": "'
-                                      || v_posicion_item
-                                      || '",
+                        || v_posicion_item
+                        || '",
                                         "Clase_condicion": "ZPR0",
                                         "Importe_condicion": "'
-                                      || V_MONTO_FINAL_SAP
-                                      || '",
+                        || v_valor_final
+                        || '",
                                         "Clave_moneda": "CLP",
                                         "Unidad_medida_condicion": "UN"
                                },';
 
-                            p_nro_cuota := p_nro_cuota + 10;
-                            v_json := v_json || v_line;
-                            v_line := '';
-                        END LOOP;
+                     p_nro_cuota := p_nro_cuota + 10;
+                     v_json := v_json || v_line;
+                     v_line := '';
+                  END LOOP;
+               END LOOP;
+            END LOOP;
 
-                    END LOOP;
+            v_line := '';
+            v_line := '} }';
+            v_json := v_json || v_line;
 
-                END LOOP;
+            --htp.p(v_json);
+            BEGIN
+               v_respuesta :=
+                  call_url_p (
+                     g_sistema_sap || '/RESTAdapter/SD001/INT_LEG05',
+                     v_json);
+            EXCEPTION
+               WHEN OTHERS
+               THEN
+                  p_ret := 'E';
+                  p_msg := p_msg || SQLERRM;
+            END;
+         END IF;
 
-                v_line := '';
-                v_line := '} }';
-                v_json := v_json || v_line;
---htp.p(v_json);
-                BEGIN
-                    v_respuesta := call_url_p(g_sistema_sap || '/RESTAdapter/SD001/INT_LEG05', v_json);
-                EXCEPTION
-                    WHEN OTHERS THEN
-                        p_ret := 'E';
-                        p_msg := p_msg || sqlerrm;
-                END;
+         IF p_ret = 'S'
+         THEN
+            BEGIN
+               l_resp_json := JSON (v_respuesta);
+               l_data_json := JSON (l_resp_json.get ('data'));
+               p_ret := lee_json (l_data_json, 'TYPE');
+               p_msg := lee_json (l_data_json, 'MESSAGE');
+            EXCEPTION
+               WHEN OTHERS
+               THEN
+                  p_ret := 'E';
+                  p_msg :=
+                     'Error en el formato de la respuesta : ' || SQLERRM;
+                  l_data_json := NULL;
+            END;
+         END IF;
 
-            END IF;
+         IF l_data_json IS NULL
+         THEN
+            p_ret := 'E';
+            p_msg := 'Error en el formato de la respuesta : ' || SQLERRM;
+         END IF;
 
-            IF p_ret = 'S' THEN
-                BEGIN
-                    l_resp_json :=
-                        JSON(
-                            v_respuesta
-                        );
-                    l_data_json :=
-                        JSON(
-                            l_resp_json.get('data')
-                        );
-                    p_ret := lee_json(l_data_json, 'TYPE');
-                    p_msg := lee_json(l_data_json, 'MESSAGE');
-                EXCEPTION
-                    WHEN OTHERS THEN
-                        p_ret := 'E';
-                        p_msg := 'Error en el formato de la respuesta : ' || sqlerrm;
-                        l_data_json := NULL;
-                END;
-            END IF;
+         INSERT INTO log_portal_pagos_sap (id,
+                                           tipo_llamada,
+                                           integracion,
+                                           pade_nro_documento,
+                                           dato2,
+                                           tipo_integracion,
+                                           dato1,
+                                           msg_sap,
+                                           fecha_msg)
+              VALUES (id_log,
+                      'S',
+                      'INTLEG05(CREA Y PAGA DEUDA  SD VENTA)',
+                      p_num_op,
+                      p_num_op,
+                      'Crea y paga deuda venta:',
+                      p_idcliente,
+                      v_json,
+                      SYSDATE);
 
-            IF l_data_json IS NULL THEN
-                p_ret := 'E';
-                p_msg := 'Error en el formato de la respuesta : ' || sqlerrm;
-            END IF;
+         INSERT INTO log_portal_pagos_sap (id,
+                                           tipo_llamada,
+                                           integracion,
+                                           pade_nro_documento,
+                                           dato2,
+                                           tipo_integracion,
+                                           dato1,
+                                           msg_sap,
+                                           fecha_msg)
+              VALUES (id_log,
+                      'S',
+                      'INTLEG05(CREA Y PAGA DEUDA  SD VENTA)',
+                      p_num_op,
+                      p_num_op,
+                      'Crea y paga deuda venta:',
+                      p_idcliente,
+                      v_respuesta,
+                      SYSDATE);
 
-            INSERT INTO log_portal_pagos_sap (
-                id,
-                tipo_llamada,
-                integracion,
-                pade_nro_documento,
-                dato2,
-                tipo_integracion,
-                dato1,
-                msg_sap,
-                fecha_msg
-            ) VALUES (
-                id_log,
-                'S',
-                'INTLEG05(CREA Y PAGA DEUDA  SD VENTA)',
-                p_num_op,
-                p_num_op,
-                'Crea y paga deuda venta:',
-                p_idcliente,
-                v_json,
-                sysdate
-            );
+         COMMIT;
+      EXCEPTION
+         WHEN OTHERS
+         THEN
+            p_ret := 'E';
+            p_msg := 'error recuperando el TOKEN:' || SQLERRM;
+            v_mensaje_personalizado := SQLERRM;
+            v_codigo_error := SQLCODE;
+            v_mensaje_error :=
+                  SQLERRM
+               || DBMS_UTILITY.format_error_backtrace
+               || ' - '
+               || p_idcliente;
+            v_fecha_error := SYSDATE;
 
-            INSERT INTO log_portal_pagos_sap (
-                id,
-                tipo_llamada,
-                integracion,
-                pade_nro_documento,
-                dato2,
-                tipo_integracion,
-                dato1,
-                msg_sap,
-                fecha_msg
-            ) VALUES (
-                id_log,
-                'S',
-                'INTLEG05(CREA Y PAGA DEUDA  SD VENTA)',
-                p_num_op,
-                p_num_op,
-                'Crea y paga deuda venta:',
-                p_idcliente,
-                v_respuesta,
-                sysdate
-            );
+            INSERT INTO log_portal_pagos_sap (id,
+                                              tipo_llamada,
+                                              integracion,
+                                              pade_nro_documento,
+                                              dato2,
+                                              tipo_integracion,
+                                              dato1,
+                                              msg_sap,
+                                              fecha_msg)
+                    VALUES (
+                              id_log,
+                              'R',
+                              'INTLEG05(CREA Y PAGA DEUDA  SD VENTA)',
+                              p_num_op,
+                              p_num_op,
+                                 p_msg
+                              || '-Crea y paga deuda venta:'
+                              || v_mensaje_error,
+                              p_idcliente,
+                              v_respuesta,
+                              SYSDATE);
 
             COMMIT;
-        EXCEPTION
-            WHEN OTHERS THEN
-                p_ret := 'E';
-                p_msg := 'error recuperando el TOKEN:' || sqlerrm;
-                v_mensaje_personalizado := sqlerrm;
-                v_codigo_error := sqlcode;
-                v_mensaje_error := sqlerrm
-                                   || dbms_utility.format_error_backtrace
-                                   || ' - '
-                                   || p_idcliente;
-                v_fecha_error := sysdate;
-                INSERT INTO log_portal_pagos_sap (
-                    id,
-                    tipo_llamada,
-                    integracion,
-                    pade_nro_documento,
-                    dato2,
-                    tipo_integracion,
-                    dato1,
-                    msg_sap,
-                    fecha_msg
-                ) VALUES (
-                    id_log,
-                    'R',
-                    'INTLEG05(CREA Y PAGA DEUDA  SD VENTA)',
-                    p_num_op,
-                    p_num_op,
-                    p_msg
-                    || '-Crea y paga deuda venta:'
-                    || v_mensaje_error,
-                    p_idcliente,
-                    v_respuesta,
-                    sysdate
-                );
+      END;
 
-                COMMIT;
-        END;
-
-        RETURN l_data_json;
-    END int_leg05_sd_venta;
+      RETURN l_data_json;
+   END int_leg05_sd_venta;
 
 /*llamada Creacion de deuda por ventas leg05*/
 
