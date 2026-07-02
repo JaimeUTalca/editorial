@@ -3936,7 +3936,8 @@ function consulta_cliente (){
       --          p.prod_nombre,
       --          v.vent_total,
       --          p.prod_precio,
-                vd.vede_cantidad,
+      --          --          p.prod_precio,
+      --          --          vd.vede_cantidad,
       --          p.prod_precio AS prod_precio_impuesto   -- prod_precio_impuesto = NULL
       --     FROM vec_cob03.pove_venta         v,
       --          vec_cob03.pove_venta_detalle vd,
