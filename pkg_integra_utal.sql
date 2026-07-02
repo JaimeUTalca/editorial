@@ -4097,28 +4097,19 @@ function consulta_cliente (){
 
                   v_json := v_line;
                   v_line := '';
-                  -- Lógica de descuento reemplazada 02/07/2026: el precio correcto es pade_monto_local
-                  -- (refleja el monto real pagado por Webpay; ya incluye despacho y descuento).
-                  -- v_valor := vec_cob03.venta_online.get_esutalca (p_idcliente);
-                  -- IF v_valor THEN v_factor := 0.7; ELSE v_factor := 0.9; END IF;
-
-                  -- contadorlibros ya no se necesita (precio viene de pade_monto_local)
-                  -- contadorlibros := 1;
+                  
+                  BEGIN
+                     SELECT vent_total INTO v_valor_final
+                     FROM vec_cob03.pove_venta
+                     WHERE vent_codigo = reg.pade_nro_documento
+                       AND ROWNUM = 1;
+                  EXCEPTION WHEN OTHERS THEN
+                     v_valor_final := reg.pade_monto_local;
+                  END;
 
                   --DETALLE DE LOS LIBROS
                   FOR reg_sap IN c_deudas_ventas (reg.pade_nro_documento)
                   LOOP
-                      -- PRECIO CORREGIDO 02/07/2026:
-                      -- Se usa pade_monto_local del cursor padre (monto real pagado por Webpay).
-                      -- Lógica original comentada:
-                      -- IF contadorlibros = 1 THEN
-                      --    v_despacho_sap := pkg_integra_utal.f_calculadespacho_sap(reg.pade_nro_documento);
-                      --    v_valor_final  := ROUND(reg_sap.prod_precio_impuesto * v_factor + v_despacho_sap, 0);
-                      -- ELSE
-                      --    v_valor_final  := ROUND(reg_sap.prod_precio_impuesto * v_factor, 0);
-                      -- END IF;
-                      v_valor_final := reg.pade_monto_local;
-
                      v_posicion_item := v_posicion_item + 10;
                      v_line :=
                            ' "ORDER_ITEMS_IN": {
@@ -4183,6 +4174,8 @@ function consulta_cliente (){
                      p_nro_cuota := p_nro_cuota + 10;
                      v_json := v_json || v_line;
                      v_line := '';
+                     -- Se sale después de la primera línea porque a SAP solo le importa el total general de la venta
+                     EXIT;
                   END LOOP;
                END LOOP;
             END LOOP;
