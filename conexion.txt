@@ -1,0 +1,31 @@
+QA vec_cob03
+user: vec_cob03
+pass: wIn0y2jQk7ElXN8q
+
+Nombre de host: oracle19c-test.utalca.cl
+SID: dbutal9
+Puerto: 1521
+
+----
+
+QA utsap001
+user: utsap001
+pass: JUveC5bj8KU2yasi
+
+Nombre de host: oracle19c-test.utalca.cl
+SID: dbutal9
+Puerto: 1521
+
+Los cambios se deben ejecutar en archivos locales, los datos de conexión son solo para visualizar o consultar información en tablas.
+
+El sitio web existe en VENTA_ONLINE2.sql que corresponde a vec_cob03.venta_online.
+El webpay_procesa.sql corresponde a una copia de un procedimiento llamado vec_cob02.webpay_procesa
+El pkg_integra_utal.sql corresponde a una copia de un paquete llamado utsap001.pkg_integra_utal
+
+Cuando se ejecuta webpay_procesa al tener pl_modulo_origen como 'PORTALVENTA' entonces entra a la creación de cliente y luego
+ejecuta utsap001.pkg_integra_utal.int_leg05_sd_venta donde al parecer hay problemas con la integración para armar el json que se necesita
+usar para la integración con SAP /RESTAdapter/SD001/INT_LEG05. 
+
+El ejemplo que si funciona pero es de otro sistema es webpay_procesa que tiene como origen pl_modulo_origen de tipo 'PORTALPREVENTAS'
+que tiene a su vez utsap001.pkg_integra_utal.int_leg05_sd_portal_integral que es más parecido a utsap001.pkg_integra_utal.int_leg05_sd_venta ya que
+int_leg05_fica_portal_integral corresponde a otro tipo de documento para pagos.
