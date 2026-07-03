@@ -4035,16 +4035,12 @@ function consulta_cliente (){
       --    libros en el JSON enviado a SAP. 
       --    Solución: Se removió el JOIN con 'pove_cliente' (el RUT ya está en 'reg.pa_rut').
       -- 
-      -- 2) Precios Incorrectos: La tabla 'pove_producto_tl' posee el campo 'prod_precio_impuesto'
-      --    en NULL, lo que enviaba valores vacíos a SAP. Además, la lógica original intentaba
-      --    recalcular el precio aplicando descuentos/despacho en código PL/SQL, pero la tabla
-      --    'pove_venta_detalle' registra subtotales erróneos repetidos (multiplicando el valor
-      --    total por la cantidad de libros si hay más de uno).
-      --    Solución: Se implementó un algoritmo matemático de prorrateo proporcional.
-      --    Se toma el total exacto pagado por Webpay ('pove_venta.vent_total') y se divide de
-      --    forma proporcional según los precios de catálogo de cada libro de la compra.
-      --    La última fila del loop absorbe la diferencia por redondeos para asegurar una cuadratura
-      --    perfecta peso a peso.
+      -- 2) Precios Incorrectos en SAP: El precio original ('prod_precio_impuesto') estaba en NULL.
+      --    Además, los subtotales en base de datos no tenían los descuentos ni el despacho aplicados.
+      --    Solución: Se implementó un prorrateo proporcional. Se toma el valor neto cobrado en Webpay
+      --    (que ya tiene todos los descuentos y despachos aplicados) y se divide entre los libros de
+      --    la compra según su precio real. El último libro ajusta la diferencia decimal (de a lo más 1 peso)
+      --    para asegurar que la suma final en SAP calce perfectamente con el pago de Webpay.
       -- 
       -- 3) Tipo de Dato del Parámetro: El parámetro 'p_id_venta' del cursor era NUMBER, pero
       --    'vent_codigo' es VARCHAR2, lo que forzaba una conversión implícita ineficiente.
