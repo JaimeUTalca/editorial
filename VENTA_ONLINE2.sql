@@ -4926,7 +4926,6 @@ begin
    cantidad_cookie := OWA_COOKIE.get ('cantidad');
    estilos;
    encabezado_carrito_compra;
-   funcion_json;
     htp.p('
 
 <style>
@@ -4968,6 +4967,7 @@ begin
         ');
         pie_cuadro_carrito_compra;
         librerias_js;
+        funcion_json;
         funciones_js;
 
 exception when OTHERs THEN
