@@ -10095,10 +10095,8 @@ BEGIN
 
   owa_util.mime_header('application/json',false, g_charset);
   OWA_UTIL.http_header_close;
-  v_autores:='(SELECT wm_concat(auto_nombre) FROM  pove_libros_autores, pove_autor where pove_libros_autores.auto_codigo=pove_autor.auto_codigo and prod_codigo=a.prod_codigo) as autores ';
-  v_autores:= '1 as autores'; -- TESTING: simplificado
-  --v_coleccion:='(SELECT wm_concat(d.cate_descripcion)  FROM pove_categoria_producto c,pove_categorias d  where  c.tipo_codigo=d.tipo_codigo and c.cate_codigo=d.cate_codigo and c.prod_codigo=a.prod_codigo group by c.prod_codigo) as coleccion '; -- PROD
-  v_coleccion:= '1 as coleccion'; -- TESTING: simplificado
+  v_autores:='(SELECT listagg(auto_nombre, chr(44)) within group (order by auto_nombre) FROM  pove_libros_autores, pove_autor where pove_libros_autores.auto_codigo=pove_autor.auto_codigo and prod_codigo=a.prod_codigo) as autores ';
+  v_coleccion:='(SELECT listagg(d.cate_descripcion, chr(44)) within group (order by d.cate_descripcion)  FROM pove_categoria_producto c,pove_categorias d  where  c.tipo_codigo=d.tipo_codigo and c.cate_codigo=d.cate_codigo and c.prod_codigo=a.prod_codigo group by c.prod_codigo) as coleccion ';
   v_sql:='select a.prod_codigo,a.prod_nombre,a.prod_descripcion,a.prod_precio,a.prod_imagen,a.prod_estado,b.libr_isbn,b.libr_agno,b.libr_num_paginas,'||v_autores||','||v_coleccion||' from pove_producto_tl a left join pove_libros b on a.prod_codigo=b.prod_codigo where a.prod_codigo='''||p_prod_codigo||''' and a.prod_estado > 0 order by b.libr_agno desc';
 
 
