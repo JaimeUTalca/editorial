@@ -1821,22 +1821,12 @@ htp.p('<style type="text/css">
 <script type="text/javascript">
 
 function valida_ingreso(e){
-  var key = window.Event ? e.which : e.keyCode
-    var a = '''';
-
-
-
-     a=document.getElementById("modal_prod_cantidad");
-    if (a.value=="0"||a.value=="")
-    {
-        a.value="1";
-       return (null)
-     }else
-        {
-               return (key)
-         }
-
-
+  var key = window.Event ? e.which : e.keyCode;
+  var a = document.getElementById("modal_prod_cantidad");
+  if (a.value == "") {
+      return (key);
+  }
+  return (key);
 }
 
 
@@ -1901,7 +1891,7 @@ htp.p('
             <tbody><tr id ="trAgotado" style="display:none">
                  <td width="107" align="center" bgcolor="#7a7873"  id="modal_prod_precio" >*</td>
               <td width="74" align="center" bgcolor="#d2d29d" class="valor2">Cantidad</td>
-              <td align="center" bgcolor="#7a7873"><input class="texto_precio" type="text" size="2" value="1" onkeyup=''return valida_ingreso(event);'' onkeypress=''return solonumeros(event)''  maxlength=''2'' id="modal_prod_cantidad"  name="modal_prod_cantidad" ></td>
+              <td align="center" bgcolor="#7a7873"><input class="texto_precio" type="text" size="2" value="1" onkeyup=''return valida_ingreso(event);'' onblur=''validar_blur_cantidad_modal();'' onkeypress=''return solonumeros(event)''  maxlength=''2'' id="modal_prod_cantidad"  name="modal_prod_cantidad" ></td>
             </tr>
             <tr id="mostrarAgo" width="74" style="display:none">
                  <td   align="center" ><h1 class="text-danger">AGOTADO</h1></td>
@@ -2168,22 +2158,41 @@ htp.p('
 <script type="text/javascript">
 
 function valida_ingreso(e,pos){
-    var key = window.Event ? e.which : e.keyCode
+    var key = window.Event ? e.which : e.keyCode;
+    var a = document.getElementById("c_cantidad_"+pos);
+    
+    if (a.value == "") {
+        return (key);
+    }
+    
+    var val = parseInt(a.value);
+    if (!isNaN(val) && val > 0) {
+        actual_cant_total();
+    }
+    return (key);
+}
 
+function validar_blur_cantidad_modal() {
+    var a = document.getElementById("modal_prod_cantidad");
+    if (a.value == "" || parseInt(a.value) <= 0 || isNaN(parseInt(a.value))) {
+        a.value = "1";
+    }
+}
 
-
-     a=document.getElementById("c_cantidad_"+pos);
-    if (a.value=="0"||a.value=="")
-    {
-        a.value="1";
-       return (null);
-       }
-     else
-        {
-               return (key)
-         }
-
-
+function validar_blur_cantidad(pos) {
+    var a = document.getElementById("c_cantidad_" + pos);
+    if (a.value == "" || parseInt(a.value) <= 0 || isNaN(parseInt(a.value))) {
+        bootbox.confirm("¿Está seguro que desea eliminar el libro seleccionado del carrito?", function(result) {
+            if (result) {
+                eliminar_libro(pos);
+            } else {
+                a.value = "1";
+                resfrescar_tab();
+            }
+        });
+    } else {
+        resfrescar_tab();
+    }
 }
 </script>
 <script>
@@ -2256,7 +2265,7 @@ a=a+"   <table class=''table''>" +
 "   <td>" +
 "   <img WIDTH=40 HEIGHT=40 src=''http://inet.utalca.cl/inspinia/img/editorial/"+value.PROD_IMAGEN+"'' class=''img-square'' alt=''image''>" +
 "   <strong >"+value.PROD_NOMBRE+"</strong></td>" +
-"   <td id=''actualizar_li_"+value.PROD_CODIGO+"''><input type=''hidden'' size=''2'' value=''"+value.PROD_CODIGO+"'' id=''c_cod_libro''  name=''c_cod_libro'' > <input type=''text'' size=''2''   onkeyup=''return valida_ingreso(event,"+value.PROD_CODIGO+");''  maxlength=''2'' onblur=''resfrescar_tab();'' onkeypress=''return solonumeros(event);''  id=''c_cantidad_"+value.PROD_CODIGO+"''  name=''c_cantidad_"+value.PROD_CODIGO+"'' class=''libro_"+value.PROD_CODIGO+"'' value=''1''></td> " +
+"   <td id=''actualizar_li_"+value.PROD_CODIGO+"''><input type=''hidden'' size=''2'' value=''"+value.PROD_CODIGO+"'' id=''c_cod_libro''  name=''c_cod_libro'' > <input type=''text'' size=''2''   onkeyup=''return valida_ingreso(event,"+value.PROD_CODIGO+");''  maxlength=''2'' onblur=''validar_blur_cantidad("+value.PROD_CODIGO+");'' onkeypress=''return solonumeros(event);''  id=''c_cantidad_"+value.PROD_CODIGO+"''  name=''c_cantidad_"+value.PROD_CODIGO+"'' class=''libro_"+value.PROD_CODIGO+"'' value=''1''></td> " +
 "   <td>$<span id=''precio_libro_"+value.PROD_CODIGO+"''>"+value.PROD_PRECIO+"</span></td>             " +
 "   <td>$<span id=''total_libro_"+value.PROD_CODIGO+"''></span></td> " +
 "</tr>";
