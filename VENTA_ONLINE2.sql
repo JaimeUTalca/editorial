@@ -2291,24 +2291,25 @@ function Limpiar()
 
     var sAux="";
     var frm = document.getElementById("div_cliente");
-
-    for (i=0;i<frm.elements.length;i++)
-    {
-
-
-        var str=frm.elements[i].name;
-        if (frm.elements[i].type==''textarea'' || frm.elements[i].type==''text'' && str.indexOf("txt_")>=0  )
+    if (frm) {
+        for (i=0;i<frm.elements.length;i++)
         {
 
-                    frm.elements[i].value='''';
+
+            var str=frm.elements[i].name;
+            if (frm.elements[i].type==''textarea'' || frm.elements[i].type==''text'' && str.indexOf("txt_")>=0  )
+            {
+
+                        frm.elements[i].value='''';
+                }
+            if (frm.elements[i].type==''select-one'')
+            {
+                $(''#''+frm.elements[i].name).val(-1);
+                $(''#''+frm.elements[i].name).trigger("chosen:updated");
+
             }
-        if (frm.elements[i].type==''select-one'')
-        {
-            $(''#''+frm.elements[i].name).val(-1);
-            $(''#''+frm.elements[i].name).trigger("chosen:updated");
 
         }
-
     }
 }
 
@@ -3339,19 +3340,20 @@ function Limpiar()
 
     var sAux="";
     var frm = document.getElementById("div_cliente");
-
-    for (i=0;i<frm.elements.length;i++)
-    {
-
-
-        var str=frm.elements[i].name;
-        if (frm.elements[i].type==''select-one'')
+    if (frm) {
+        for (i=0;i<frm.elements.length;i++)
         {
-            $(''#''+frm.elements[i].name).val(-1);
-            $(''#''+frm.elements[i].name).trigger("chosen:updated");
+
+
+            var str=frm.elements[i].name;
+            if (frm.elements[i].type==''select-one'')
+            {
+                $(''#''+frm.elements[i].name).val(-1);
+                $(''#''+frm.elements[i].name).trigger("chosen:updated");
+
+            }
 
         }
-
     }
 }
 function calcular_total_venta (){
@@ -6254,24 +6256,25 @@ function Limpiar()
 
     var sAux="";
     var frm = document.getElementById("div_ficha");
-
-    for (i=0;i<frm.elements.length;i++)
-    {
-
-
-        var str=frm.elements[i].name;
-        if (frm.elements[i].type==''textarea'' || frm.elements[i].type==''text'' && str.indexOf("txt_")>=0  )
+    if (frm) {
+        for (i=0;i<frm.elements.length;i++)
         {
 
-                    frm.elements[i].value='''';
+
+            var str=frm.elements[i].name;
+            if (frm.elements[i].type==''textarea'' || frm.elements[i].type==''text'' && str.indexOf("txt_")>=0  )
+            {
+
+                        frm.elements[i].value='''';
+                }
+            if (frm.elements[i].type==''select-one'')
+            {
+                $(''#''+frm.elements[i].name).val(-1);
+                $(''#''+frm.elements[i].name).trigger("chosen:updated");
+
             }
-        if (frm.elements[i].type==''select-one'')
-        {
-            $(''#''+frm.elements[i].name).val(-1);
-            $(''#''+frm.elements[i].name).trigger("chosen:updated");
 
         }
-
     }');
 
       CASE g_m
