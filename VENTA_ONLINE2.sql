@@ -1426,10 +1426,10 @@ BEGIN
   if trim(texto_busqueda)=''  then
      v_condicion_adicional :='';
   else
-    v_condicion_adicional :=' and ( UPPER(a.prod_nombre) like UPPER(''%'||texto_busqueda||'%'')  or  upper((SELECT wm_concat(auto_nombre) FROM  pove_libros_autores, pove_autor where pove_libros_autores.auto_codigo=pove_autor.auto_codigo and prod_codigo=a.prod_codigo))  like TRANSLATE(UPPER(''%'||texto_busqueda||'%''),''áéíóúàèìòùãõâêîôôäëïöüçÁÉÍÓÚÀÈÌÒÙÃÕÂÊÎÔÛÄËÏÖÜÇ'',''aeiouaeiouaoaeiooaeioucAEIOUAEIOUAOAEIOOAEIOUC'')  )';
+    v_condicion_adicional :=' and ( UPPER(a.prod_nombre) like UPPER(''%'||texto_busqueda||'%'')  or  upper((SELECT listagg(auto_nombre, '','') within group (order by auto_nombre) FROM  pove_libros_autores, pove_autor where pove_libros_autores.auto_codigo=pove_autor.auto_codigo and prod_codigo=a.prod_codigo))  like TRANSLATE(UPPER(''%'||texto_busqueda||'%''),''áéíóúàèìòùãõâêîôôäëïöüçÁÉÍÓÚÀÈÌÓÙÃÕÂÊÎÔÛÄËÏÖÜÇ'',''aeiouaeiouaoaeiooaeioucAEIOUAEIOUAOAEIOOAEIOUC'')  )';
 
    end if;
-  v_autores:='(SELECT wm_concat(auto_nombre) FROM  pove_libros_autores, pove_autor where pove_libros_autores.auto_codigo=pove_autor.auto_codigo and prod_codigo=a.prod_codigo) as autores ';
+  v_autores:='(SELECT listagg(auto_nombre, '','') within group (order by auto_nombre) FROM  pove_libros_autores, pove_autor where pove_libros_autores.auto_codigo=pove_autor.auto_codigo and prod_codigo=a.prod_codigo) as autores ';
    -- v_autores:= '1 as autores';
    v_sql:='SELECT a.prod_codigo, a.prod_nombre, a.prod_descripcion, a.prod_precio, a.prod_imagen, a.prod_estado, c.cate_codigo,c.cate_descripcion ,'||v_autores||'  FROM pove_producto_tl a,pove_categoria_producto b,pove_categorias c, pove_libros l    where  a.prod_codigo=b.prod_codigo   and b.tipo_codigo=c.tipo_codigo  and b.prod_codigo = l.prod_codigo and b.cate_codigo=c.cate_codigo  and c.cate_codigo='''||coleccion||''' '||v_condicion_adicional||' and a.prod_estado > 0 and a.prod_precio > 0 order by c.cate_codigo asc, l.libr_codigo desc';
 
