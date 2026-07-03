@@ -6376,40 +6376,40 @@ htp.p('}
                                         mostrar_toastr(response.mensaje, response.tipo_mensaje);
                                         Limpiar();
 
-                                       if ('||g_m||'==180)
+                                       if ('||nvl(g_m, 0)||'==180)
                                        {
                                          ReCargar_grilla_tipo(''#txt_tipo_codigo'');
 
 
                                        }
-                                       if ('||g_m||'==181)
+                                       if ('||nvl(g_m, 0)||'==181)
                                        {
                                          ReCargar_grilla_categoria($(''#txt_tipo_codigo'').chosen().val());
 
 
                                        }
-                                       if ('||g_m||'==183)
+                                       if ('||nvl(g_m, 0)||'==183)
                                        {
                                          ReCargar_grilla_autor(''#txt_auto_codigo'');
 
                                        }
-                                       if ('||g_m||'==184)
+                                       if ('||nvl(g_m, 0)||'==184)
                                        {
                                          ReCargar_grilla_paises(''#txt_pais_codigo'');
 
                                        }
-                                       if ('||g_m||'==185)
+                                       if ('||nvl(g_m, 0)||'==185)
                                        {
                                          ReCargar_grilla_regiones($(''#txt_pais_codigo'').chosen().val());
 
 
                                        }
-                                       if ('||g_m||'==187)
+                                       if ('||nvl(g_m, 0)||'==187)
                                        {
                                          ReCargar_grilla_estado_despacho(''#txt_esde_codigo'');
 
                                        }
-                                       if ('||g_m||'==192)
+                                       if ('||nvl(g_m, 0)||'==192)
                                        {
                                          ReCargar_grilla_tarifa_despacho(''#txt_tade_codigo'');
 
@@ -6492,42 +6492,42 @@ htp.p('}
 
                                         mostrar_toastr(response.mensaje, response.tipo_mensaje);
                                         Limpiar();
-                                       if ('||g_m||'==180)
+                                       if ('||nvl(g_m, 0)||'==180)
                                        {
                                          ReCargar_grilla_tipo(''#txt_tipo_codigo'');
                                          //alert(''aaaa'');
                                        }
-                                       if ('||g_m||'==181)
+                                       if ('||nvl(g_m, 0)||'==181)
                                        {
                                          //ReCargar_grilla_categoria(''#txt_cate_codigo'');
                                          ReCargar_grilla_categoria($(''#txt_tipo_codigo'').chosen().val());
                                        }
-                                       if ('||g_m||'==183)
+                                       if ('||nvl(g_m, 0)||'==183)
                                        {
                                          ReCargar_grilla_autor(''#txt_auto_codigo'');
                                        }
-                                       if ('||g_m||'==184)
+                                       if ('||nvl(g_m, 0)||'==184)
                                        {
                                          ReCargar_grilla_paises(''#txt_pais_codigo'');
 
                                        }
-                                       if ('||g_m||'==185)
+                                       if ('||nvl(g_m, 0)||'==185)
                                        {
 
                                          ReCargar_grilla_regiones($(''#txt_pais_codigo'').chosen().val());
 
                                        }
-                                       if ('||g_m||'==187)
+                                       if ('||nvl(g_m, 0)||'==187)
                                        {
                                          ReCargar_grilla_estado_despacho(''#txt_esde_codigo'');
 
                                        }
-                                       if ('||g_m||'==192)
+                                       if ('||nvl(g_m, 0)||'==192)
                                        {
                                          ReCargar_grilla_tarifa_despacho(''#txt_tade_codigo'');
 
                                        }
-                                       if ('||g_m||'==250){
+                                       if ('||nvl(g_m, 0)||'==250){
                                             alert(''paso inser cliente'');
 
                                        }
