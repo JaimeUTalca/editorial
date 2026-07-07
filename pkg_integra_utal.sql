@@ -3987,6 +3987,7 @@ function consulta_cliente (){
 
       p_nro_cuota               NUMBER;
       id_log                    NUMBER;
+      l_data_json_l             json_list;
       v_posicion_item           NUMBER := 0;
       v_valor_final             NUMBER;
       -- Variables para el cálculo de prorrateo del total de venta en SAP (02/07/2026):
@@ -4207,7 +4208,8 @@ function consulta_cliente (){
          THEN
             BEGIN
                l_resp_json := JSON (v_respuesta);
-               l_data_json := JSON (l_resp_json.get ('data'));
+               l_data_json_l := json_list (l_resp_json.get ('Resp'));
+               l_data_json := JSON (l_data_json_l.get (1));
                p_ret := lee_json (l_data_json, 'TYPE');
                p_msg := lee_json (l_data_json, 'MESSAGE');
             EXCEPTION
