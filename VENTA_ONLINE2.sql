@@ -3179,8 +3179,15 @@ $(document).ready(function(){
             if (!loc) { alert(''Error al procesar el pago. Intente nuevamente.''); return; }
             // Corregir según entorno (testing/prod)
             loc = corregir_url_entorno(loc);
-            // Navegar al portal de pagos
-            window.location.href = loc;
+            
+            // Limpiar cookies del carrito en el navegador antes de ir a pagar
+            fetch(''venta_online.escribir?v_libros=&v_cantidad=&v_limpiacookie=1'')
+            .then(function() {
+                window.location.href = loc;
+            })
+            .catch(function() {
+                window.location.href = loc;
+            });
         })
         .catch(function() {
             // Fallback: submit directo del formulario
