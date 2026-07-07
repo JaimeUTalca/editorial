@@ -1972,7 +1972,7 @@ BEGIN
               --actualiza_sgc_sap(reg.pade_ano,TBK_ORDEN_COMPRA,V_CARRERA_ICON,to_date(reg.pade_fec_vencimiento,'YYYYMMDD'),v_tipo_documento_icon);
                 END IF;
 
-            ELSE
+            ELSIF ( pl_modulo_origen <> 'PORTALVENTA' ) THEN
                 procesar_sgc_sap(tbk_orden_compra, tbk_id_sesion);
            --actualiza_sgc_sap(reg.pade_ano,TBK_ORDEN_COMPRA,V_CARRERA_ICON,to_date(reg.pade_fec_vencimiento,'YYYYMMDD'),v_tipo_documento_icon);
             END IF;
