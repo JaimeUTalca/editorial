@@ -4880,10 +4880,24 @@ begin
                         return false;
                     }
 
-                    //ORIGINAL
-                 variables=variables+''dato_centro_resp//''+v_centro_resp+''@@vede_sub_total//''+v_subtotal+''@@pais_codigo1//''+v_pa_codigo+''@@regi_codigo1//''+v_re_codigo+''@@ciud_codigo1//''+v_ci_codigo+''@@vede_descuento//''+v_total_descuento_detalle+''@@vent_total//''+total_compra+"@@ls_libros//'||libros_cookie.vals(1)||'@@ls_cantidad//'||cantidad_cookie.vals(1)||'@@";
+                    // Construcción dinámica de libros y cantidades desde el DOM para evitar obsolescencia de cookies inyectadas por PL/SQL
+                     var js_libros_var = "";
+                     var js_cantidades_var = "";
+                     var textos_inputs = document.getElementsByTagName("input");
+                     var vistos_var = {};
+                     for (var ll = 0; ll < textos_inputs.length; ll++) {
+                         if (textos_inputs[ll].id == ''c_cod_libro'') {
+                             var cod = textos_inputs[ll].value;
+                             if (!vistos_var[cod]) {
+                                 js_libros_var = js_libros_var + ''@'' + cod;
+                                 var cant_input = document.getElementById(''c_cantidad_'' + cod);
+                                 js_cantidades_var = js_cantidades_var + ''@'' + (cant_input ? cant_input.value : 0);
+                                 vistos_var[cod] = true;
+                             }
+                         }
+                     }
 
-                 //     variables=variables+''vede_sub_total//''+v_subtotal+''@@vede_descuento//''+v_total_descuento_detalle+''@@vent_total//''+total_compra+"@@ls_libros//'||libros_cookie.vals(1)||'@@ls_cantidad//'||cantidad_cookie.vals(1)||'@@";
+                     variables=variables+''dato_centro_resp//''+v_centro_resp+''@@vede_sub_total//''+v_subtotal+''@@pais_codigo1//''+v_pa_codigo+''@@regi_codigo1//''+v_re_codigo+''@@ciud_codigo1//''+v_ci_codigo+''@@vede_descuento//''+v_total_descuento_detalle+''@@vent_total//''+total_compra+''@@ls_libros//''+js_libros_var+''@@ls_cantidad//''+js_cantidades_var+''@@'';
 
 
 
