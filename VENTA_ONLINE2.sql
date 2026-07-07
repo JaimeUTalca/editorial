@@ -2329,53 +2329,63 @@ function resfrescar_tab(){
 
 
 function actualizar_precio (v_libros_1,v_cantidad_1){
+         var array_libros = v_libros_1.split("@");
+         var array_cantidad = v_cantidad_1.split("@");
 
+         // 1. Agrupar cantidades por prod_codigo para manejar posibles duplicados heredados
+         var cantidades_por_libro = {};
+         for (var i = 1; i < array_libros.length; i++) {
+             var cod = array_libros[i];
+             var cant = parseInt(array_cantidad[i]) || 0;
+             if (cod) {
+                 cantidades_por_libro[cod] = (cantidades_por_libro[cod] || 0) + cant;
+             }
+         }
 
-        var v_lista_libros=v_libros_1;
-         var array_libros = v_lista_libros.split("@");
+         // 2. Asignar las cantidades agrupadas a los inputs en el DOM
+         for (var cod in cantidades_por_libro) {
+             var input = document.getElementById("c_cantidad_" + cod);
+             if (input) {
+                 input.value = cantidades_por_libro[cod];
+             }
+         }
 
-         var v_cantidad_libros=v_cantidad_1;
-         var array_cantidad = v_cantidad_libros.split("@");
+         // 3. Recorrer los libros en el DOM y calcular subtotales y total general
+         var sumatotal = 0;
+         var cantidad_total = 0;
+         var inputs_cod = document.getElementsByTagName("input");
+         
+         for (var i = 0; i < inputs_cod.length; i++) {
+             if (inputs_cod[i].id == "c_cod_libro") {
+                 var cod = inputs_cod[i].value;
+                 var input_cant = document.getElementById("c_cantidad_" + cod);
+                 var span_precio = document.getElementById("precio_libro_" + cod);
+                 var span_total = document.getElementById("total_libro_" + cod);
+                 
+                 if (input_cant && span_precio && span_total) {
+                     var cant = parseInt(input_cant.value) || 0;
+                     var precio = parseInt(span_precio.innerHTML) || 0;
+                     var subtotal = cant * precio;
+                     
+                     span_total.innerHTML = subtotal;
+                     sumatotal += subtotal;
+                     cantidad_total += cant;
+                 }
+             }
+         }
 
+         // 4. Actualizar totales en la pantalla
+         var span_cant_total = document.getElementById("c_cantidad_total");
+         if (span_cant_total) {
+             span_cant_total.innerHTML = cantidad_total;
+         }
+         
+         var span_total_gral = document.getElementById("v_total");
+         if (span_total_gral) {
+             span_total_gral.innerHTML = sumatotal;
+         }
 
-
-
-         var sumatotal=0;
-
-         for (i = 1; i < array_libros.length; i++) {
-
-                var x = document.getElementsByClassName("libro_"+array_libros[i]);
-
-
-                var j;
-
-                for (j = 0; j < x.length; j++) {
-                    x[j].value = array_cantidad[i];
-
-                }
-
-
-
-
-
-
-                var y=document.getElementById("total_libro_"+array_libros[i]);
-                var v_precio=document.getElementById("precio_libro_"+array_libros[i]);
-
-
-                var subtotal=0;
-
-                subtotal=eval(array_cantidad[i]*v_precio.innerHTML);
-                y.innerHTML=subtotal;
-                sumatotal=sumatotal+subtotal;
-
-            }
-            document.getElementById("c_cantidad_total").innerHTML=eval(array_cantidad.join(" + "));
-
-            document.getElementById("v_total").innerHTML=sumatotal;
-
-            calcular_total_venta();
-
+         calcular_total_venta();
 }
 
 
