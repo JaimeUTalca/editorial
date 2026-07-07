@@ -2500,19 +2500,24 @@ function eliminar_libro(codigo){
     $("#btn_continuar").click ( function (e)
     {
           e.preventDefault();
-           var js_libros='''||libros_cookie.vals(1)||''';
+          
+          var v_libros_nuevos = "";
+          var v_cantidades_nuevas = "";
+          var v_textos = document.getElementsByTagName("input");
+          var vistos = {};
+          for (var ll = 0; ll < v_textos.length; ll++) {
+              if (v_textos[ll].id == ''c_cod_libro'') {
+                  if (!vistos[v_textos[ll].value]) {
+                      v_libros_nuevos = v_libros_nuevos + ''@'' + v_textos[ll].value;
+                      var cod = v_textos[ll].value;
+                      var cant_input = document.getElementById(''c_cantidad_'' + cod);
+                      v_cantidades_nuevas = v_cantidades_nuevas + ''@'' + (cant_input ? cant_input.value : 0);
+                      vistos[v_textos[ll].value] = true;
+                  }
+              }
+          }
 
-           var js_arr_libros=js_libros.split(''@'');
-
-           var js_cant_cookie='''';
-
-           for (k=1;k<js_arr_libros.length;k++){
-             js_cant_cookie=js_cant_cookie+ ''@''+$(''#c_cantidad_''+js_arr_libros[k]).val();
-
-           }
-
-
-          var v_data = ''v_libros=''+js_libros +''&v_cantidad=''+js_cant_cookie+''&v_limpiacookie=1'';
+          var v_data = ''v_libros='' + v_libros_nuevos + ''&v_cantidad='' + v_cantidades_nuevas + ''&v_limpiacookie=1'';
           //alert(v_data);
            $.ajax({
                    url:''venta_online.escribir'',
