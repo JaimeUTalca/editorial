@@ -2963,6 +2963,25 @@ $(document).ready(function(){
             </form>
         </div>
 
+    <!-- Modal de confirmacion de pedido -->
+        <div class="modal inmodal" id="ModalConfirmarPedido" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content animated bounceInRight">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="fa fa-shopping-cart"></i> Confirmar Pedido</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>¿Confirma que desea continuar con la operación?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
+                        <button type="button" id="btn_confirmar_pedido" class="btn btn-primary">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <!-- Div modal para mostrar y editar detalles -->
         <div class="modal inmodal" id="ModalDetalles" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -3080,13 +3099,78 @@ $(document).ready(function(){
 
     function comprobar(id_trx)
     {
+        // Llenar los campos del formulario formu
+        document.getElementById(''producto_cliente_id'').value = document.getElementById(''txt_clie_rut'').value;
+        document.getElementById(''producto_id'').value = id_trx;
+        document.getElementById(''producto_cliente_nmb'').value = document.getElementById(''txt_clie_destinatario'').value;
+        document.getElementById(''producto_valor'').value = document.getElementById(''v_total_compra'').innerHTML;
 
+        var BASE_TESTING = ''http://condor2-19testing.utalca.cl/pls/cob_test/'';
+        var BASE_PROD = ''http://condor2.utalca.cl/pls/cob/'';
+        var esTesting = window.location.hostname.indexOf(''testing'') !== -1;
 
-        document.getElementById(''producto_cliente_id'').value=document.getElementById(''txt_clie_rut'').value;
-        document.getElementById(''producto_id'').value=id_trx;
-        document.getElementById(''producto_cliente_nmb'').value=document.getElementById(''txt_clie_destinatario'').value;
-        document.getElementById(''producto_valor'').value=document.getElementById(''v_total_compra'').innerHTML;
-        document.formu.submit();
+        function corregir_url_entorno(url) {
+            if (!url) return url;
+            if (esTesting) {
+                // En ambiente de testing, reescribir cualquier URL que intente ir a producción
+                return url
+                    .replace(''https://condor2.utalca.cl/pls/cob/'', BASE_TESTING)
+                    .replace(''http://condor2.utalca.cl/pls/cob/'', BASE_TESTING);
+            } else {
+                // En ambiente de producción, reescribir cualquier URL que intente ir a testing
+                return url
+                    .replace(''https://condor2-19testing.utalca.cl/pls/cob_test/'', BASE_PROD)
+                    .replace(''http://condor2-19testing.utalca.cl/pls/cob_test/'', BASE_PROD);
+            }
+        }
+
+        var frm = document.getElementById(''formu'');
+        var url_valida = corregir_url_entorno(frm.action);
+        var params = new URLSearchParams(new FormData(frm)).toString();
+
+        // Paso 1: POST a valida_pagos_venta
+        fetch(url_valida, {
+            method: ''POST'',
+            headers: {''Content-Type'': ''application/x-www-form-urlencoded''},
+            body: params,
+            redirect: ''follow''
+        })
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            var doc = new DOMParser().parseFromString(html, ''text/html'');
+            var form1 = doc.getElementById(''form1'');
+            if (!form1) { alert(''Error al iniciar el pago. Intente nuevamente.''); return; }
+
+            var action_graba = corregir_url_entorno(form1.action);
+            var params2 = [];
+            form1.querySelectorAll(''input[type="hidden"]'').forEach(function(i) {
+                params2.push(encodeURIComponent(i.name) + ''='' + encodeURIComponent(i.value));
+            });
+
+            // Paso 2: POST a graba_cookie siguiendo el redirect automaticamente
+            // redirect:follow permite leer resp.url con la URL final del redirect
+            return fetch(action_graba, {
+                method: ''POST'',
+                headers: {''Content-Type'': ''application/x-www-form-urlencoded''},
+                body: params2.join(''&''),
+                redirect: ''follow''
+            });
+        })
+        .then(function(resp) {
+            if (!resp) return;
+            // resp.url contiene la URL final tras seguir el 302 de graba_cookie
+            // resp.redirected confirma que se siguio el redirect
+            var loc = resp.url || '''';
+            if (!loc) { alert(''Error al procesar el pago. Intente nuevamente.''); return; }
+            // Corregir según entorno (testing/prod)
+            loc = corregir_url_entorno(loc);
+            // Navegar al portal de pagos
+            window.location.href = loc;
+        })
+        .catch(function() {
+            // Fallback: submit directo del formulario
+            document.formu.submit();
+        });
 
 
 
@@ -4781,26 +4865,25 @@ begin
 
 
 
-                          if(confirm("¿Confirma que desea continuar con la operación?"))
-                            {
+                          // Guardar variables en contexto global para usarlas desde el modal
+                          window._venta_variables = variables;
 
-                                  $.ajax({
-                                    url:''venta_online.REGISTRA_VENTA'',
-                                    type:''GET'',
-                                    data:"p_variables="+variables+"&p_operacion=I",
-                                    //data:v_data,
-                                    dataType: "json",
-                                    success:function(json){ //response
-                                          //alert(json.id_trx);
-                                          comprobar(json.id_trx);
-                                          //comprobar();
-                                         // comprobar_clie_sap();
-                                     }
-                                });
-                            }else{
+                          // Abrir modal de confirmacion Bootstrap en lugar del confirm() nativo
+                          $(''#ModalConfirmarPedido'').modal(''show'');
 
-                                return false;
-                            }
+                          // El boton Confirmar del modal ejecuta el AJAX
+                          $(''#btn_confirmar_pedido'').off(''click'').on(''click'', function() {
+                              $(''#ModalConfirmarPedido'').modal(''hide'');
+                              $.ajax({
+                                  url:''venta_online.REGISTRA_VENTA'',
+                                  type:''GET'',
+                                  data:"p_variables="+window._venta_variables+"&p_operacion=I",
+                                  dataType: "json",
+                                  success:function(json){ //response
+                                      comprobar(json.id_trx);
+                                  }
+                              });
+                          });
 
 
                 }else{
