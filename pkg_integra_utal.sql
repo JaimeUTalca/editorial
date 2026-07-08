@@ -4235,7 +4235,7 @@ function consulta_cliente (){
                                            dato2,
                                            tipo_integracion,
                                            dato1,
-                                           msg_sap,
+                                           msg_sap2,
                                            fecha_msg)
               VALUES (id_log,
                       'S',
@@ -4254,7 +4254,7 @@ function consulta_cliente (){
                                            dato2,
                                            tipo_integracion,
                                            dato1,
-                                           msg_sap,
+                                           msg_sap2,
                                            fecha_msg)
               VALUES (id_log,
                       'S',
@@ -4288,7 +4288,7 @@ function consulta_cliente (){
                                               dato2,
                                               tipo_integracion,
                                               dato1,
-                                              msg_sap,
+                                              msg_sap2,
                                               fecha_msg)
                     VALUES (
                               id_log,
