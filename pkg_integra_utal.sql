@@ -4130,7 +4130,7 @@ function consulta_cliente (){
                         || '",
                                         "Jerarquia_posicion": "U0035",
                                         "Centro": "UT01",
-                                        "Cantidad_prevista": "1",
+                                        "Cantidad_prevista": "' || reg_sap.vede_cantidad || '",
                                         "Unidad_medida": "UN",
                                         "Centro_beneficio": "",
                                         "Creado_por": "SYSPOSTGRADO",
@@ -4165,7 +4165,7 @@ function consulta_cliente (){
                                         "Fecha_reparto": "'
                         || reg.pade_fec_vencimiento
                         || '",
-                                        "Cantidad_pedida": "1"
+                                        "Cantidad_pedida": "' || reg_sap.vede_cantidad || '"
                                },
                            "ORDER_CONDITIONS_IN": {
                                         "Numero_posicion_condicion": "'
@@ -4173,7 +4173,7 @@ function consulta_cliente (){
                         || '",
                                         "Clase_condicion": "ZPR0",
                                         "Importe_condicion": "'
-                        || v_valor_final
+                        || ROUND(v_valor_final / NVL(reg_sap.vede_cantidad, 1), 0)
                         || '",
                                         "Clave_moneda": "CLP",
                                         "Unidad_medida_condicion": "UN"
