@@ -401,10 +401,13 @@ BEGIN
                                                                                , p_cli_canal_distribucion,
                                                                                v_ret, v_msg);
 
-                        l_data_json2 :=
-                            JSON(
-                                l_cli_json2.get('data')
-                            );
+                        BEGIN
+                            l_cli_json2_list := json_list(l_cli_json2.get('data'));
+                            l_data_json2 := JSON(l_cli_json2_list.get(1));
+                        EXCEPTION
+                            WHEN OTHERS THEN
+                                l_data_json2 := JSON(l_cli_json2.get('data'));
+                        END;
                         v_ret2 := utsap001.pkg_integra_utal.lee_json(l_data_json2, 'TYPE');
                         v_msg2 := utsap001.pkg_integra_utal.lee_json(l_data_json2, 'MESSAGE');
                 --REGISTRAMOS EL LOG DE LA CREACION
@@ -667,10 +670,13 @@ BEGIN
                                                                            ,
                                                                            v_ret, v_msg);
 
-                    l_data_json2 :=
-                        JSON(
-                            l_cli_json2.get('data')
-                        );
+                    BEGIN
+                        l_cli_json2_list := json_list(l_cli_json2.get('data'));
+                        l_data_json2 := JSON(l_cli_json2_list.get(1));
+                    EXCEPTION
+                        WHEN OTHERS THEN
+                            l_data_json2 := JSON(l_cli_json2.get('data'));
+                    END;
                     v_ret2 := utsap001.pkg_integra_utal.lee_json(l_data_json2, 'TYPE');
                     v_msg2 := utsap001.pkg_integra_utal.lee_json(l_data_json2, 'MESSAGE');
                 EXCEPTION
@@ -877,10 +883,13 @@ BEGIN
                                                                                    , p_cli_canal_distribucion,
                                                                                    v_ret, v_msg);
 
-                            l_data_json2 :=
-                                JSON(
-                                    l_cli_json2.get('data')
-                                );
+                            BEGIN
+                                l_cli_json2_list := json_list(l_cli_json2.get('data'));
+                                l_data_json2 := JSON(l_cli_json2_list.get(1));
+                            EXCEPTION
+                                WHEN OTHERS THEN
+                                    l_data_json2 := JSON(l_cli_json2.get('data'));
+                            END;
                             v_ret2 := utsap001.pkg_integra_utal.lee_json(l_data_json2, 'TYPE');
                             v_msg2 := utsap001.pkg_integra_utal.lee_json(l_data_json2, 'MESSAGE');
                         EXCEPTION
