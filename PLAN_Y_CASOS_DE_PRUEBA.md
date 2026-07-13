@@ -16,52 +16,7 @@ De acuerdo a las validaciones de base de datos implementadas en `vec_cob03.venta
 
 ---
 
-## 2. Reporte de Calidad del Código: Bug Crítico en `get_esutalca` (RESOLVIDO)
-> [!NOTE]
-> **Bug de Clasificación de Estudiantes Activos: CORREGIDO**
-> En la función compilada `venta_online.get_esutalca`, el subquery que consulta a la tabla `alumno` realizaba la siguiente concatenación:
-> ```sql
-> select to_char(a.alu_rut_n||''-''||a.alu_rut_v) Rut
-> ```
-> Debido al uso de dos comillas simples consecutivas (`''-''`) en lugar de comillas simples simples (`'-'`) dentro del cuerpo de la función compilada original, Oracle evaluaba la expresión como:
-> `(alu_rut_n || NULL) - (NULL || alu_rut_v)`
-> Esto resultaba en la substracción de valores y luego la concatenación del dígito verificador, haciendo que **para cualquier estudiante, la función retornara únicamente su dígito verificador (por ejemplo, '2') en lugar del RUT completo**.
-> 
-> **Estado del Bug**: **CORREGIDO**
-> El código fue corregido localmente en [VENTA_ONLINE.sql](file:///home/jaime/Documentos/Proyectos/Portal%20Editorial/VENTA_ONLINE.sql) y [VENTA_ONLINE2.sql](file:///home/jaime/Documentos/Proyectos/Portal%20Editorial/VENTA_ONLINE2.sql), y fue compilado exitosamente en la base de datos de QA.
-> 
-> **Solución aplicada**:
-> Se eliminó el formateo erróneo de la concatenación, implementando una limpieza robusta del RUT recibido (`p_rut`), extrayendo el número base de RUT (removiendo el dígito verificador y puntos) y comparándolo directamente con los números base de RUT de funcionarios (`rol_emp`) y alumnos (`alu_rut_n`).
-> 
-> El código corregido es:
-> ```sql
-> -- Limpieza del RUT de entrada (remueve guión, DV y puntos)
-> v_rut_clean := regexp_replace(p_rut, '-[0-9kK]$', '');
-> v_rut_clean := replace(v_rut_clean, '.', '');
-> 
-> select count(*) into v_encontro from (
->     SELECT to_char(rol_emp) as rut
->     FROM REM_FICHA
->     union
->     select to_char(a.alu_rut_n) as rut
->     from alumno a,  plan_alu p
->     where a.alu_rut_n = p.alu_rut_n
->     and hist_situacion.situacion_valida_informes(pal_situacion_academica_actual) ='S'
->     and pal_situacion_academica_actual  in (1,4,19,30,31,32,72)
-> )
-> where rut= v_rut_clean;
-> ```
-> 
-> **Resultado de la Verificación Post-Corrección**:
-> * `get_esutalca('15318220-5')` (Funcionario) -> **True**
-> * `get_esutalca('15318220')` (Funcionario) -> **True**
-> * `get_esutalca('8861499-2')` (Estudiante) -> **True**
-> * `get_esutalca('8861499')` (Estudiante) -> **True**
-> * `get_esutalca('12345678-9')` (Externo) -> **False**
-
----
-
-## 3. Listado de Libros Validados en la Base de Datos (QA)
+## 2. Listado de Libros Validados en la Base de Datos (QA)
 A continuación se detallan los libros de la lista proporcionada que **existen en la base de datos** y tienen un precio válido (mayor a $0). Estos libros son aptos para las pruebas.
 
 ### 3.1. Libros Aptos para Pruebas (Con Precio Registrado)
@@ -206,7 +161,7 @@ Los siguientes códigos de libros de la lista original no se encontraron en la b
 
 ---
 
-## 4. Casos de Uso y Escenarios de Prueba
+## 3. Casos de Uso y Escenarios de Prueba
 
 ### Caso de Uso 1: Compra por Usuario Interno (Comunidad UTalca)
 * **Objetivo**: Validar el cobro del 30% de descuento para un funcionario de la universidad y su correcta integración con SAP.
@@ -248,21 +203,25 @@ Los siguientes códigos de libros de la lista original no se encontraron en la b
   - Suma SAP: $27,000 (Calza 100% con Webpay).
 
 ### Caso de Uso 3: Compra por Estudiante Activo (UTalca)
-* **Objetivo**: Demostrar el impacto del bug crítico de clasificación en estudiantes.
+* **Objetivo**: Validar el cobro del 30% de descuento para un estudiante activo de la universidad y su correcta integración con SAP.
 * **Datos de Prueba**:
-  - **RUT Cliente**: `12296508-2` (Estudiante activo, sin contrato como funcionario)
+  - **RUT Cliente**: `12296508-2` (Estudiante activo)
   - **Libros a comprar**:
     1. ¡Viva la ciencia! (`900001497`) - Cantidad: 1 (Base: $10,000)
-  - **Comportamiento Esperado (Sin Bug)**:
-    - `get_esutalca` evalúa a `True`.
-    - Se aplica 30% de descuento. Total a pagar: $7,000.
-  - **Comportamiento Actual (Con Bug)**:
-    - `get_esutalca` evalúa a `False`.
-    - Se aplica solo 10% de descuento. Total a pagar: $9,000.
+  - **Despacho / Envío**: Retiro en Tienda ($0)
+* **Cálculo del Pago**:
+  - Subtotal Catálogo: $10,000
+  - Subtotal con Descuento (30% off, factor 0.7): $10,000 * 0.7 = $7,000
+  - Envío: $0
+  - **Total Webpay (Monto a pagar)**: **$7,000**
+* **Comportamiento en SAP**:
+  - Se genera una orden de venta en SAP con tipo de documento `ZP08`.
+  - Item 1 (`900001497`): $7,000
+  - Suma SAP: $7,000 (Calza 100% con Webpay).
 
 ---
 
-## 5. Algoritmo de Prorrateo de Precios para SAP (Commit 66c29f4)
+## 4. Algoritmo de Prorrateo de Precios para SAP (Commit 66c29f4)
 Para evitar discrepancias de centavos en SAP y garantizar que la suma de los ítems en SAP calce perfectamente con el pago total recibido en Webpay, se aplica un prorrateo ponderado basado en el precio total real pagado:
 
 1. **Suma de Precios Catálogo (S)**: La suma del precio base de catálogo de todos los productos en la compra.
