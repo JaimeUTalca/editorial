@@ -1066,31 +1066,31 @@ end;
 function get_esutalca (p_rut varchar2  default null) return boolean
 IS
 v_encontro int;
+v_rut_clean varchar2(100);
 
 BEGIN
 
+-- Clean the RUT by removing trailing hyphen-DV and any dots
+v_rut_clean := regexp_replace(p_rut, '-[0-9kK]$', '');
+v_rut_clean := replace(v_rut_clean, '.', '');
 
 select count(*) into v_encontro from (
-SELECT rol_emp as rut
+SELECT to_char(rol_emp) as rut
 FROM REM_FICHA
 union
-select to_char(a.alu_rut_n||''-''||a.alu_rut_v) Rut
+select to_char(a.alu_rut_n) as rut
 from alumno a,  plan_alu p
 where a.alu_rut_n = p.alu_rut_n
 and hist_situacion.situacion_valida_informes(pal_situacion_academica_actual) ='S'
 and pal_situacion_academica_actual  in (1,4,19,30,31,32,72)
 )
-where rut= p_rut;
+where rut= v_rut_clean;
 
 if v_encontro > 0 then
     RETURN true;
 else
     RETURN false;
 end if;
-
-
-
-
 
 end;
 

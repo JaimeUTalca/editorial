@@ -8,6 +8,17 @@ Puerto: 1521
 
 ----
 
+QA vec_cob02
+user: vec_cob02
+pass: tlXc8Cg7NIftPiRp
+
+Nombre de host: oracle19c-test.utalca.cl
+SID: dbutal9
+Puerto: 1521
+
+
+----
+
 QA utsap001
 user: utsap001
 pass: JUveC5bj8KU2yasi
