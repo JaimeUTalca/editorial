@@ -2989,8 +2989,7 @@ $(document).ready(function(){
                                                                  <input disabled class="radio i-checks disabled" value="1" name="txt_clie_bol_fac" id="txt_clie_bol_fac" type="radio">&nbsp;<label class="control-label" style="font-weight:normal;">Factura</label>
                                                               </div>
                                                           </div>
-                                                      </div>      </div>
-                                                    </div>
+                                                      </div>
                                                  <div class="form-group">
                                                    <div class=''hr-line-dashed''></div>
                                                    <div class="well m-t"><strong></strong>
@@ -3001,8 +3000,9 @@ $(document).ready(function(){
                                                      <br>
                                                    </div>
                                                  </div>
-                    </div>
-            </form>
+                                                     </div>
+                                                   </div>
+                                                 </form>
         </div>
 
     <!-- Modal de confirmacion de pedido -->
