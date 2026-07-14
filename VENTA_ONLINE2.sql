@@ -2956,11 +2956,6 @@ $(document).ready(function(){
                                                                 <p style="margin:4px 0 0 22px; color:#4a6400;">Editorial, Universidad de Talca</p>
                                                             </div>
                                                         </div>
-                                                        <div class="col-lg-offset-2 col-lg-10" id="tipo_distribucion" style="display: none;">
-                                                            <div style="background:#fff8e1; border-left:4px solid #f0a500; border-radius:4px; padding:8px 14px;">
-                                                                <p style="margin:0; color:#b7791f;"><i class="fa fa-info-circle" style="margin-right:6px;"></i>Distribuci&oacute;n solo por: <strong><span id="v_tipo_distribucion"></span></strong></p>
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                     </div>
                                                     </div>
@@ -3410,14 +3405,12 @@ function mostrar_detalle () {
         if($("input[name=''txt_clie_retiro'']:checked").val() == "S")  {
 
                       document.getElementById("mostrar_info").style.display = "block";
-                      document.getElementById(''tipo_distribucion'').style.display = ''none'';
                       document.getElementById("v_valor_despacho").innerHTML = ''0'';
                       calcular_total_venta();
 
         }else if($("input[name=''txt_clie_retiro'']:checked").val() == "N") {
 
                       document.getElementById("mostrar_info").style.display = "none";
-                      document.getElementById(''tipo_distribucion'').style.display = ''none'';
 
                       /* UX FIX: si la ciudad ya fue seleccionada, recalcular el costo de envio
                          en lugar de resetear a 0. Asi el usuario no pierde el valor al
@@ -3425,7 +3418,6 @@ function mostrar_detalle () {
                       var v_ciudad_actual = document.getElementById("txt_ciud_codigo");
                       if (v_ciudad_actual && v_ciudad_actual.value && v_ciudad_actual.value != "-1") {
                           mostrar_valores_despacho(v_ciudad_actual.value);
-                          mostrar_tipo_distribucion(v_ciudad_actual.value);
                       } else {
                           document.getElementById("v_valor_despacho").innerHTML = ''0'';
                           calcular_total_venta();
@@ -3537,42 +3529,6 @@ function mostrar_valores_despacho(id_ciudad){
 
 <script>
 
-function mostrar_tipo_distribucion(id_ciudad){
-
-
-          v_data = "p_ciud_codigo="+id_ciudad;
-
-          $.ajax({
-                   url:''venta_online.get_json_tipo_distribucion'',
-                   type:''GET'',
-                   data: v_data,
-                   dataType: "json",
-
-                   success:function(response){
-
-                        var var_value_ciud='''';
-
-
-                             $.each(response.data, function(key, value){
-
-                                    $.each( value, function ( userkey, uservalue) {
-
-                                         if (userkey==''TIDI_DESCRIPCION'' && uservalue==''En Agencia''){
-                                               var_value_ciud=uservalue;
-                                            document.getElementById(''tipo_distribucion'').style.display = ''block'';
-                                            document.getElementById(''v_tipo_distribucion'').innerHTML = var_value_ciud;
-                                        }else{
-                                            document.getElementById(''tipo_distribucion'').style.display = ''none'';
-
-                                        }
-
-                                    });
-
-                              });
-
-                    }
-          });
-}
 
      function carga_ciudades(id_regiones)
      {
@@ -3629,7 +3585,6 @@ function mostrar_tipo_distribucion(id_ciudad){
 
                                 }else{
                                         mostrar_valores_despacho($(this).val());
-                                        mostrar_tipo_distribucion($(this).val());
                                 }
                             });
 
