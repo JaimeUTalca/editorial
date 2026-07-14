@@ -2824,134 +2824,146 @@ $(document).ready(function(){
                       </div>
                       <div class="'||v_ancho_columna7||'">
                          <div id="miDescuento">
-                            <table class="table" style="font-size: 13px;">
-                                <thead>
-                                <tr>
-                                    <th>SubTotal Productos:</th>
-                                    <th>$&nbsp;<span  id=''v_subtotalprod'' ></span> </th>
-                                </tr>
-                                <tr>
-                                    <th>Descuentos Comunidad universitaria:</th>
-                                    <th>$&nbsp;<span  id=''v_total_descuento''></span></th>
-                                </tr>
-                                <tr>
-                                    <th>Costo de envió:</th>
-                                    <th>$&nbsp;<span  id=''v_valor_despacho''></span></th>
-                                </tr>
-                                <tr>
-                                    <th>Total a pagar:</th>
-                                    <th>$&nbsp;<span  id=''v_total_compra''></span></th>
-                                </tr>
-                                <tr style="display:none">
-                                    <th>centro de costo:</th>
-                                    <th>$&nbsp;<span  id=''v_centro_costo''></span></th>
-                                </tr>
-                                </thead>
-                            </table>
-                         </div>
-                      </div>
-                     <div id="myDIV" class="col-lg-12"  style="display:none" >
-                                                  <div  id="response-container">
-                                                    <div id="" class="form-horizontal" >
-                                                    <div class="form-group" style="display:none" >
-                                                        <label class="'||v_ancho_columna1||' control-label">Tipo Cliente:</label>
-                                                        <div class="'||v_ancho_columna3||'">
-                                                             <input class="radio i-checks "  value="1" name="txt_clie_interlocutor" id="txt_clie_interlocutor" type="radio" checked>&nbsp;<label class="control-label">Persona</label>
-                                                             <input class="radio i-checks "  value="2" name="txt_clie_interlocutor" id="txt_clie_interlocutor" type="radio" >&nbsp;<label class="control-label">Empresa</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-
-                                                        <label class="'||v_ancho_columna1||' control-label">Nombres:</label>
+                             <table class="table" style="font-size: 13px;">
+                                 <thead>
+                                 <tr>
+                                     <th>Subtotal Productos:</th>
+                                     <th>$&nbsp;<span  id=''v_subtotalprod'' ></span> </th>
+                                 </tr>
+                                 <tr>
+                                     <th>Descuentos Comunidad Universitaria:</th>
+                                     <th>$&nbsp;<span  id=''v_total_descuento''></span></th>
+                                 </tr>
+                                 <tr>
+                                     <th>Costo de Env&iacute;o:</th>
+                                     <th>$&nbsp;<span  id=''v_valor_despacho''></span></th>
+                                 </tr>
+                                 <tr>
+                                     <th>Total a Pagar:</th>
+                                     <th>$&nbsp;<span  id=''v_total_compra''></span></th>
+                                 </tr>
+                                 <tr style="display:none">
+                                     <th>Centro de Costo:</th>
+                                     <th>$&nbsp;<span  id=''v_centro_costo''></span></th>
+                                 </tr>
+                                 </thead>
+                             </table>
+                          </div>
+                       </div>
+                      <div id="myDIV" class="col-lg-12"  style="display:none" >
+                                                   <div  id="response-container">
+                                                     <div id="" class="form-horizontal" >
+                                                     <div class="form-group" style="display:none" >
+                                                         <label class="'||v_ancho_columna1||' control-label">Tipo Cliente:</label>
                                                          <div class="'||v_ancho_columna3||'">
-                                                                     <input  placeholder="INGRESE NOMBRES" class="form-control obligatorio" value="" name="txt_clie_nombre_pila" id="txt_clie_nombre_pila">
-                                                                     <input  placeholder="INGRESE NOMBRES" type="hidden" class="form-control obligatorio" value="03" name="txt_clie_canal_distribucion" id="txt_clie_canal_distribucion">
-
+                                                              <input class="radio i-checks "  value="1" name="txt_clie_interlocutor" id="txt_clie_interlocutor" type="radio" checked>&nbsp;<label class="control-label">Persona</label>
+                                                              <input class="radio i-checks "  value="2" name="txt_clie_interlocutor" id="txt_clie_interlocutor" type="radio" >&nbsp;<label class="control-label">Empresa</label>
+                                                         </div>
+                                                     </div>
+                                                     <div class="form-group">
+                                                         <label class="'||v_ancho_columna1||' control-label">Nombres:</label>
+                                                         <div class="'||v_ancho_columna3||'">
+                                                             <input placeholder="Ej: Juan" class="form-control obligatorio" value="" name="txt_clie_nombre_pila" id="txt_clie_nombre_pila">
+                                                             <input type="hidden" class="form-control" value="03" name="txt_clie_canal_distribucion" id="txt_clie_canal_distribucion">
                                                          </div>
                                                          <label class="'||v_ancho_columna1||' control-label">Apellido Paterno:</label>
                                                          <div class="'||v_ancho_columna3||'">
-                                                                     <input  placeholder="INGRESE APELLIDO PATERNO" class="form-control obligatorio" value="" name="txt_clie_apellido_paterno" id="txt_clie_apellido_paterno">
-
+                                                             <input placeholder="Ej: P&eacute;rez" class="form-control obligatorio" value="" name="txt_clie_apellido_paterno" id="txt_clie_apellido_paterno">
                                                          </div>
+                                                     </div>
+
+                                                     <div class="form-group">
                                                          <label class="'||v_ancho_columna1||' control-label">Apellido Materno:</label>
                                                          <div class="'||v_ancho_columna3||'">
-                                                                     <input  placeholder="INGRESE APELLIDO MATERNO" class="form-control obligatorio" value="" name="txt_clie_apellido_materno" id="txt_clie_apellido_materno">
-
+                                                             <input placeholder="Ej: Gonz&aacute;lez" class="form-control obligatorio" value="" name="txt_clie_apellido_materno" id="txt_clie_apellido_materno">
                                                          </div>
-                                                         <label class="'||v_ancho_columna1||' control-label">Mail:</label>
+                                                         <label class="'||v_ancho_columna1||' control-label">Correo Electr&oacute;nico:</label>
                                                          <div class="'||v_ancho_columna3||'">
-                                                                     <input  placeholder="INGRESE MAIL" class="form-control obligatorio" value="" name="txt_clie_e_mail" id="txt_clie_e_mail">
-
+                                                             <input placeholder="Ej: correo@email.com" class="form-control obligatorio" value="" name="txt_clie_e_mail" id="txt_clie_e_mail">
                                                          </div>
+                                                     </div>
+
+                                                     <div class="form-group">
                                                          <label class="'||v_ancho_columna1||' control-label">Destinatario:</label>
                                                          <div class="'||v_ancho_columna3||'">
-                                                                     <input  placeholder="INGRESE DESTINATARIO" class="form-control obligatorio" value="" name="txt_clie_destinatario" id="txt_clie_destinatario">
-                                                                     <input type="hidden" id="DATE" name="DATE" value="WOULD_LIKE_TO_ADD_DATE_HERE">
+                                                             <input placeholder="Nombre de quien recibe el pedido" class="form-control obligatorio" value="" name="txt_clie_destinatario" id="txt_clie_destinatario">
+                                                             <input type="hidden" id="DATE" name="DATE" value="WOULD_LIKE_TO_ADD_DATE_HERE">
                                                          </div>
-                                                         <label class="'||v_ancho_columna1||' control-label">País:</label>
-                                                         <div class="'||v_ancho_columna3||'" >
-                                                             <select  class="chosen form-control m-b obligatorio" name="txt_pais_codigo" id="txt_pais_codigo">
-                                                                  <option value="-1">SELECCIONE PAIS</option>');
-                                                              get_combos('pais_codigo', ' pais_descripcion', 'vec_cob03.pove_pais', 'pais_codigo = ''38''');
-                                                   htp.p(' </select>
+                                                         <label class="'||v_ancho_columna1||' control-label">Pa&iacute;s:</label>
+                                                         <div class="'||v_ancho_columna3||'">
+                                                             <div class="form-control" style="background:#f5f5f5; border:1px solid #e5e6e7; color:#555; cursor:default; display:flex; align-items:center; height:34px;">
+                                                                 <i class="fa fa-flag" style="margin-right:8px; color:#769900;"></i> Chile
+                                                             </div>
+                                                             <input type="hidden" name="txt_pais_codigo" id="txt_pais_codigo" value="38">
+                                                         </div>
+                                                     </div>
+
+                                                     <div class="form-group">
+                                                         <label class="'||v_ancho_columna1||' control-label">Regi&oacute;n:</label>
+                                                         <div class="'||v_ancho_columna3||'" id="cont_select_nivel_region">
+                                                             <select class="chosen form-control m-b obligatorio" name="txt_regi_codigo" id="txt_regi_codigo">
+                                                                 <option value="-1">Seleccione regi&oacute;n</option>
+                                                             ');
+                                                             get_combos('regi_codigo', ' regi_descripcion', 'vec_cob03.pove_region', '');
+                                                             HTP.P('</select>
+                                                         </div>
+                                                         <div class="'||v_ancho_columna3||'" id="hide_otra_region" style="display:none;">
+                                                             <input placeholder="Ingrese regi&oacute;n" class="form-control" id="disp_region" name="disp_region" value="" readonly="readonly">
                                                          </div>
 
+                                                         <label class="'||v_ancho_columna1||' control-label">Ciudad:</label>
+                                                         <div class="'||v_ancho_columna3||'" id="cont_select_nivel_ciudad">
+                                                             <select class="chosen form-control m-b obligatorio" name="txt_ciud_codigo" id="txt_ciud_codigo">
+                                                                 <option value="-1">Seleccione ciudad</option>
+                                                             ');
+                                                             get_combos('ciud_codigo', ' ciud_descripcion', 'vec_cob03.pove_ciudad', '','cire_codigo');
+                                                             HTP.P('</select>
+                                                         </div>
+                                                         <div class="'||v_ancho_columna3||'" id="hide_otra_ciudad" style="display:none;">
+                                                             <input placeholder="Ingrese ciudad" class="form-control" id="disp_ciudad" name="disp_ciudad" value="" readonly="readonly">
+                                                         </div>
+                                                     </div>
+
+                                                     <div class="form-group">
+                                                         <label class="'||v_ancho_columna1||' control-label">Direcci&oacute;n:</label>
+                                                         <div class="'||v_ancho_columna3||'">
+                                                             <input placeholder="Ej: Av. Principal 123" class="form-control obligatorio" value="" name="txt_clie_direccion" id="txt_clie_direccion">
+                                                        </div>
+                                                        <label class="'||v_ancho_columna1||' control-label">N&uacute;mero de Direcci&oacute;n:</label>
+                                                        <div class="'||v_ancho_columna3||'">
+                                                            <input placeholder="Ej: 1141" class="form-control obligatorio solonumero" value="" name="txt_clie_num_direccion" id="txt_clie_num_direccion">
+                                                        </div>
                                                     </div>
+
                                                     <div class="form-group">
-
-                                                             <label class="'||v_ancho_columna1||' control-label">Región:</label>
-                                                             <div class="'||v_ancho_columna3||'" id="cont_select_nivel_region">
-
-                                                             <select class="chosen form-control m-b obligatorio" name="txt_regi_codigo" id="txt_regi_codigo" >
-                                                                      <option value="-1">SELECCIONE REGION</option>
-                                                                ');
-                                                                get_combos('regi_codigo', ' regi_descripcion', 'vec_cob03.pove_region', '');
-                                                        HTP.P('</select>
-                                                             </div>
-                                                             <div class="'||v_ancho_columna3||'" id="hide_otra_region">
-                                                                 <input placeholder="INGRESE REGION " class="form-control" id="disp_region" name="disp_region" value="" readonly="readonly" >
-                                                             </div>
-
-                                                             <label class="'||v_ancho_columna1||' control-label">Ciudad:</label>
-                                                             <div class="'||v_ancho_columna3||'" id="cont_select_nivel_ciudad">
-
-                                                             <select class="chosen form-control m-b obligatorio" name="txt_ciud_codigo" id="txt_ciud_codigo" >
-                                                                      <option value="-1">SELECCIONE CIUDAD</option>
-                                                                ');
-                                                                get_combos('ciud_codigo', ' ciud_descripcion', 'vec_cob03.pove_ciudad', '','cire_codigo');
-                                                        HTP.P('</select>
-                                                             </div>
-                                                         <div class="'||v_ancho_columna3||'" id="hide_otra_ciudad">
-                                                             <input placeholder="INGRESE CIUDAD " class="form-control" id="disp_ciudad" name="disp_ciudad" value="" readonly="readonly" >
-                                                         </div>
-                                                         <label class="'||v_ancho_columna1||' control-label">Direccion:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                                     <input  placeholder="INGRESE DIRECCION "  class="form-control obligatorio" value="" name="txt_clie_direccion" id="txt_clie_direccion">
-                                                         </div>
-                                                         <label class="'||v_ancho_columna1||' control-label">Numero Direccion:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                                     <input  placeholder="INGRESE NUM DIRECCION "   class="form-control obligatorio solonumero" value="" name="txt_clie_num_direccion" id="txt_clie_num_direccion">
-                                                         </div>
-                                                         <label class="'||v_ancho_columna1||' control-label">Telefono Contacto:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                                     <input  placeholder="INGRESE TELEFONO CONTACTO" class="form-control obligatorio solonumero" value="" name="txt_clie_tel_contacto" id="txt_clie_tel_contacto">
-                                                         </div>
-                                                          <label class="'||v_ancho_columna3||' control-label">RETIRO EN TIENDA  (SIN COSTO DE ENVIO)</label>
-                                                        <div class="'||v_ancho_columna1||'">
-                                                               <input class="radio i-checks "  value="S" name="txt_clie_retiro" id="txt_clie_retiro" type="radio" checked >&nbsp;<label class="control-label">Si</label>
-                                                               <input class="radio i-checks "  value="N" name="txt_clie_retiro" id="txt_clie_retiro" type="radio" disabled >&nbsp;<label class="control-label">No</label>
+                                                        <label class="'||v_ancho_columna1||' control-label">Tel&eacute;fono de Contacto:</label>
+                                                        <div class="'||v_ancho_columna3||'">
+                                                            <input placeholder="Ej: 912345678" class="form-control obligatorio solonumero" value="" name="txt_clie_tel_contacto" id="txt_clie_tel_contacto">
                                                         </div>
-
-                                                        <div class="'||v_ancho_columna8||'">
-                                                            <div class="col-lg-offset-3 '||v_ancho_columna10||'" id="mostrar_info" style="display: none">
-                                                                <h4 style="color:#769900"><strong><font><font> Lugar de retiro 1 Poniente #1141, Frente a plaza de Armas Nueva Casa Central.</br><p align="center">Editorial, Universidad de Talca</p></font></font></strong></h4>
+                                                        <label class="'||v_ancho_columna1||' control-label">Retiro en Tienda:</label>
+                                                        <div class="'||v_ancho_columna3||'">
+                                                            <div style="padding-top: 5px;">
+                                                                <input class="radio i-checks" value="S" name="txt_clie_retiro" id="txt_clie_retiro" type="radio" checked>&nbsp;<label class="control-label" style="font-weight:normal;">S&iacute;</label>
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                <input class="radio i-checks" value="N" name="txt_clie_retiro" id="txt_clie_retiro" type="radio">&nbsp;<label class="control-label" style="font-weight:normal;">No</label>
+                                                                
                                                             </div>
                                                         </div>
-                                                       <div >
-                                                            <div class="col-lg-offset-2 '||v_ancho_columna10||'" id="tipo_distribucion" style="display: none;  color:#769900;">
-                                                                        <h4 ><strong>no hay distribucion domiciliaria solo &nbsp;<span id="v_tipo_distribucion"></span></strong></h4>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <div class="col-lg-offset-2 col-lg-10" id="mostrar_info" style="display: block;">
+                                                            <div style="background:#f0f7e0; border-left:4px solid #769900; border-radius:4px; padding:10px 14px; margin-bottom: 10px;">
+                                                                <p style="margin:0; color:#4a6400;"><i class="fa fa-map-marker" style="margin-right:6px;"></i><strong>Lugar de retiro:</strong> 1 Poniente #1141, frente a Plaza de Armas Nueva Casa Central.</p>
+                                                                <p style="margin:4px 0 0 22px; color:#4a6400;">Editorial, Universidad de Talca</p>
                                                             </div>
-                                                       </div>
+                                                        </div>
+                                                        <div class="col-lg-offset-2 col-lg-10" id="tipo_distribucion" style="display: none;">
+                                                            <div style="background:#fff8e1; border-left:4px solid #f0a500; border-radius:4px; padding:8px 14px;">
+                                                                <p style="margin:0; color:#b7791f;"><i class="fa fa-info-circle" style="margin-right:6px;"></i>Distribuci&oacute;n solo por: <strong><span id="v_tipo_distribucion"></span></strong></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     </div>
                                                     </div>
                                                   </div>
@@ -3404,12 +3416,22 @@ function mostrar_detalle () {
                       document.getElementById("v_valor_despacho").innerHTML = ''0'';
                       calcular_total_venta();
 
-
         }else if($("input[name=''txt_clie_retiro'']:checked").val() == "N") {
-                     document.getElementById(''disp_ciud_codigo'').selectedIndex = ''<option value="-1">SELECCIONE CIUDAD</option>'';
-                     $("#disp_ciud_codigo").trigger("chosen:updated");
-                     document.getElementById("v_valor_despacho").innerHTML = ''0'';
-                     calcular_total_venta();
+
+                      document.getElementById("mostrar_info").style.display = "none";
+                      document.getElementById(''tipo_distribucion'').style.display = ''none'';
+
+                      /* UX FIX: si la ciudad ya fue seleccionada, recalcular el costo de envio
+                         en lugar de resetear a 0. Asi el usuario no pierde el valor al
+                         cambiar entre los radios. */
+                      var v_ciudad_actual = document.getElementById("txt_ciud_codigo");
+                      if (v_ciudad_actual && v_ciudad_actual.value && v_ciudad_actual.value != "-1") {
+                          mostrar_valores_despacho(v_ciudad_actual.value);
+                          mostrar_tipo_distribucion(v_ciudad_actual.value);
+                      } else {
+                          document.getElementById("v_valor_despacho").innerHTML = ''0'';
+                          calcular_total_venta();
+                      }
         }else{
                 return false;
         }
@@ -3693,32 +3715,25 @@ function mostrar_tipo_distribucion(id_ciudad){
      }
 
 
-    $(document).ready(function(){
+        $(document).ready(function(){
+         /* Pais es Chile fijo (hidden), la region siempre visible.
+            La ciudad se muestra solo tras elegir region. */
+         $(''#cont_select_nivel_ciudad'').hide();
+         $(''#hide_otra_ciudad'').hide();
+         $(''#cont_select_nivel_region'').show();
+         $(''#hide_otra_region'').hide();
 
-           $(''#txt_pais_codigo'').change( function() {
-                  carga_regiones($(this).val());
-                  if ($(this).val()==38)
-                  {
-                        $(''#cont_select_nivel_region'').show();
-                        $(''#hide_otra_region'').hide();
-                  }
-                  else
-                  {
-                      document.getElementById("v_valor_despacho").innerHTML=0;
-                      calcular_total_venta();
-                    $(''#cont_select_nivel_region'').hide();
-                    $(''#hide_otra_region'').show();
-
-                  }
-        });
-
-         $(''#cont_select_nivel_region'').hide();
-         $(''#hide_otra_region'').show();
-
-
-                  $(''#cont_select_nivel_ciudad'').hide();
-                  $(''#hide_otra_ciudad'').show();
-
+         // Escuchar el cambio en el selector de region inicial
+         $(''#txt_regi_codigo'').change(function() {
+             carga_ciudades($(this).val());
+             if ($(this).val() != -1) {
+                 $(''#cont_select_nivel_ciudad'').show();
+                 $(''#hide_otra_ciudad'').hide();
+             } else {
+                 $(''#cont_select_nivel_ciudad'').hide();
+                 $(''#hide_otra_ciudad'').show();
+             }
+         });
      });
 
 
@@ -3863,7 +3878,7 @@ var v_descuento_aplicado= '''';
               });
 
 
-             $("#txt_pais_codigo").chosen();
+              // $("#txt_pais_codigo").chosen();
              $("#txt_ciud_codigo").chosen();
 
 
