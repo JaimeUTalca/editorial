@@ -4618,13 +4618,88 @@ begin
      var v_desc_navidad = 0.30;
         function calcular_venta_final (){
 
-          var v_subtotal = document.getElementById("v_subtotalprod").innerHTML;
-          var v_total_descuento_det =eval(document.getElementById("v_total_descuento").innerHTML);
-        //var v_total_desc =eval(document.getElementById("v_total_descuento").innerHTML);
-          var v_valor_desp =eval(document.getElementById("v_valor_despacho").innerHTML);
+          var v_subtotal = parseInt(document.getElementById("v_subtotalprod").innerHTML.replace(/\D/g, '''')) || 0;
+          var v_total_descuento_det = parseInt(document.getElementById("v_total_descuento").innerHTML.replace(/\D/g, '''')) || 0;
+          var v_valor_desp = parseInt(document.getElementById("v_valor_despacho").innerHTML.replace(/\D/g, '''')) || 0;
 
-        document.getElementById("v_total_compra").innerHTML=(parseInt(v_subtotal)- parseInt(v_total_descuento_det))+parseInt(v_valor_desp);
+          var V0 = (v_subtotal - v_total_descuento_det) + v_valor_desp;
+          var V_ajustado = V0;
 
+          try {
+              var items = [];
+              var total_cantidad = 0;
+              var suma_precios_catalogo = 0;
+              var textos_inputs = document.getElementsByTagName("input");
+              var vistos_var = {};
+              for (var ll = 0; ll < textos_inputs.length; ll++) {
+                  if (textos_inputs[ll].id == ''c_cod_libro'') {
+                      var cod = textos_inputs[ll].value;
+                      if (!vistos_var[cod]) {
+                          var cant_input = document.getElementById(''c_cantidad_'' + cod);
+                          var cant = cant_input ? parseInt(cant_input.value) : 0;
+                          var precio_span = document.getElementById(''precio_libro_'' + cod);
+                          var precio = precio_span ? parseInt(precio_span.innerText.replace(/\D/g, '''')) : 0;
+                          
+                          if (cant > 0) {
+                              items.push({
+                                  cantidad: cant,
+                                  precio: precio
+                              });
+                              total_cantidad += cant;
+                              suma_precios_catalogo += precio * cant;
+                          }
+                          vistos_var[cod] = true;
+                      }
+                  }
+              }
+
+              if (items.length > 0 && V0 > 0 && suma_precios_catalogo > 0) {
+                  // Simular prorrateo SAP
+                  var calcular_sap = function(V) {
+                      var monto_acumulado = 0;
+                      var total_sap = 0;
+                      var N = items.length;
+                      for (var i = 0; i < N; i++) {
+                          var item = items[i];
+                          var val_i = 0;
+                          if (i < N - 1) {
+                              val_i = Math.round(((item.precio * item.cantidad) / suma_precios_catalogo) * V);
+                              monto_acumulado += val_i;
+                          } else {
+                              val_i = V - monto_acumulado;
+                          }
+                          var P_i = Math.round(val_i / item.cantidad);
+                          total_sap += P_i * item.cantidad;
+                      }
+                      return total_sap;
+                  };
+
+                  var mejor_V = V0;
+                  var min_diff = Infinity;
+                  for (var diff = -10; diff <= 10; diff++) {
+                      var V_cand = V0 + diff;
+                      if (V_cand <= 0) continue;
+                      if (calcular_sap(V_cand) === V_cand) {
+                          var abs_diff = Math.abs(diff);
+                          if (abs_diff < min_diff) {
+                              min_diff = abs_diff;
+                              mejor_V = V_cand;
+                          }
+                      }
+                  }
+                  V_ajustado = mejor_V;
+              }
+          } catch(e) {
+              console.error("Error al calcular total redondeable:", e);
+          }
+
+          if (V_ajustado !== V0) {
+              var diff = V_ajustado - V0;
+              v_valor_desp += diff;
+              document.getElementById("v_valor_despacho").innerHTML = v_valor_desp;
+          }
+
+          document.getElementById("v_total_compra").innerHTML = V_ajustado;
         }
 
     $(document).ready(function() {
