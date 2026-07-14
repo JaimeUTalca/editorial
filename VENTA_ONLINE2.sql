@@ -2493,8 +2493,6 @@ function eliminar_libro(codigo){
                                          });
 
                          return true;
-        } else {
-             return false;
         }
                          });
 
