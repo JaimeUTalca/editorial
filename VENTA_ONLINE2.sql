@@ -2440,64 +2440,66 @@ function actualizar_precio (v_libros_1,v_cantidad_1){
 
 
 function eliminar_libro(codigo){
-
+ 
  bootbox.confirm(" Esta seguro que desea eliminar el libro seleccionado? ", function(result) {
-
-                        $("#eliminar_li_"+codigo).remove();
-                        //document.getElementById("eliminar_li_"+codigo).remove();
-                        var v_cantidad=  document.getElementsByTagName("input");
-
-
-                         var ll;
-                         var v_libros_nuevos='''';
-                         var v_cantidades_nuevas='''';
-                            for (ll = 0; ll < v_cantidad.length; ll++) {
-                                if (v_cantidad[ll].id==''c_cod_libro'')
-                                {
-
-                                   v_libros_nuevos=v_libros_nuevos+''@''+v_cantidad[ll].value;
-                                }
-                                else
-                                {
+        if (result) {
+                         $("#eliminar_li_"+codigo).remove();
+                         //document.getElementById("eliminar_li_"+codigo).remove();
+                         var v_cantidad=  document.getElementsByTagName("input");
 
 
-                                         str=v_cantidad[ll].id;
-                                         var n = str.indexOf(''c_cantidad_'');
-                                         if (n !=-1)
-                                        {
+                          var ll;
+                          var v_libros_nuevos='''';
+                          var v_cantidades_nuevas='''';
+                             for (ll = 0; ll < v_cantidad.length; ll++) {
+                                 if (v_cantidad[ll].id==''c_cod_libro'')
+                                 {
 
-                                           v_cantidades_nuevas=v_cantidades_nuevas+''@''+v_cantidad[ll].value;
-                                        }
-                                }
-                            }
-
-
-
-                               var v_data = ''v_libros=''+v_libros_nuevos +''&v_cantidad=''+v_cantidades_nuevas+''&v_limpiacookie=1'';
-
-                                           $.ajax({
-                                               url:''venta_online.escribir'',
-                                               type:''GET'',
-                                               data: v_data,
-
-                                               success:function(response){
-
-                                               actualizar_precio(v_libros_nuevos,v_cantidades_nuevas);
-                                               calcular_total_venta();
+                                    v_libros_nuevos=v_libros_nuevos+''@''+v_cantidad[ll].value;
+                                 }
+                                 else
+                                 {
 
 
-                                                }
+                                          str=v_cantidad[ll].id;
+                                          var n = str.indexOf(''c_cantidad_'');
+                                          if (n !=-1)
+                                         {
+
+                                            v_cantidades_nuevas=v_cantidades_nuevas+''@''+v_cantidad[ll].value;
+                                         }
+                                 }
+                             }
 
 
 
-                                        });
+                                var v_data = ''v_libros=''+v_libros_nuevos +''&v_cantidad=''+v_cantidades_nuevas+''&v_limpiacookie=1'';
 
-                        return true;
+                                            $.ajax({
+                                                url:''venta_online.escribir'',
+                                                type:''GET'',
+                                                data: v_data,
 
-                        });
+                                                success:function(response){
+
+                                                actualizar_precio(v_libros_nuevos,v_cantidades_nuevas);
+                                                calcular_total_venta();
 
 
-    }
+                                                 }
+
+
+
+                                         });
+
+                         return true;
+        } else {
+             return false;
+        }
+                         });
+
+
+     }
    var id='''';
    $(document).ready(function(){
 
@@ -5820,10 +5822,10 @@ FOR fila IN cur_categoria LOOP
 
 IF fila.cate_destacado=1 THEN
 /**<img src=''http://inet.utalca.cl/inspinia/img/editorial/nuevo.jpg'' width=''50'' height=''50''>**/
-    v_destacado:='COLECCIÓN </span>" + response.data[0].CATE_DESCRIPCION +"&nbsp;';
+    v_destacado:='COLECCI&Oacute;N </span>" + response.data[0].CATE_DESCRIPCION +"&nbsp;';
 
 ELSE
-    v_destacado:='COLECCIÓN </span>" + response.data[0].CATE_DESCRIPCION +"';
+    v_destacado:='COLECCI&Oacute;N </span>" + response.data[0].CATE_DESCRIPCION +"';
 END IF;
 
 htp.p('
