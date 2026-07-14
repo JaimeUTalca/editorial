@@ -2915,9 +2915,7 @@ $(document).ready(function(){
                                                          <div class="'||v_ancho_columna3||'" id="cont_select_nivel_ciudad">
                                                              <select class="chosen form-control m-b obligatorio" name="txt_ciud_codigo" id="txt_ciud_codigo">
                                                                  <option value="-1">Seleccione ciudad</option>
-                                                             ');
-                                                             get_combos('ciud_codigo', ' ciud_descripcion', 'vec_cob03.pove_ciudad', '','cire_codigo');
-                                                             HTP.P('</select>
+                                                             </select>
                                                          </div>
                                                          <div class="'||v_ancho_columna3||'" id="hide_otra_ciudad" style="display:none;">
                                                              <input placeholder="Ingrese ciudad" class="form-control" id="disp_ciudad" name="disp_ciudad" value="" readonly="readonly">
