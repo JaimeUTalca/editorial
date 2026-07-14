@@ -2851,123 +2851,145 @@ $(document).ready(function(){
                           </div>
                        </div>
                       <div id="myDIV" class="col-lg-12"  style="display:none" >
-                                                   <div  id="response-container">
-                                                     <div id="" class="form-horizontal" >
-                                                     <div class="form-group" style="display:none" >
-                                                         <label class="'||v_ancho_columna1||' control-label">Tipo Cliente:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                              <input class="radio i-checks "  value="1" name="txt_clie_interlocutor" id="txt_clie_interlocutor" type="radio" checked>&nbsp;<label class="control-label">Persona</label>
-                                                              <input class="radio i-checks "  value="2" name="txt_clie_interlocutor" id="txt_clie_interlocutor" type="radio" >&nbsp;<label class="control-label">Empresa</label>
-                                                         </div>
-                                                     </div>
-                                                     <div class="form-group">
-                                                         <label class="'||v_ancho_columna1||' control-label">Nombres:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                             <input placeholder="Ej: Juan" class="form-control obligatorio" value="" name="txt_clie_nombre_pila" id="txt_clie_nombre_pila">
-                                                             <input type="hidden" class="form-control" value="03" name="txt_clie_canal_distribucion" id="txt_clie_canal_distribucion">
-                                                         </div>
-                                                         <label class="'||v_ancho_columna1||' control-label">Apellido Paterno:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                             <input placeholder="Ej: P&eacute;rez" class="form-control obligatorio" value="" name="txt_clie_apellido_paterno" id="txt_clie_apellido_paterno">
-                                                         </div>
-                                                     </div>
+                                                                       <div id="" class="form-horizontal" >
+                                                      <div class="form-group" style="display:none" >
+                                                          <label class="'||v_ancho_columna1||' control-label">Tipo Cliente:</label>
+                                                          <div class="'||v_ancho_columna3||'">
+                                                               <input class="radio i-checks "  value="1" name="txt_clie_interlocutor" id="txt_clie_interlocutor" type="radio" checked>&nbsp;<label class="control-label">Persona</label>
+                                                               <input class="radio i-checks "  value="2" name="txt_clie_interlocutor" id="txt_clie_interlocutor" type="radio" >&nbsp;<label class="control-label">Empresa</label>
+                                                          </div>
+                                                      </div>
 
-                                                     <div class="form-group">
-                                                         <label class="'||v_ancho_columna1||' control-label">Apellido Materno:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                             <input placeholder="Ej: Gonz&aacute;lez" class="form-control obligatorio" value="" name="txt_clie_apellido_materno" id="txt_clie_apellido_materno">
-                                                         </div>
-                                                         <label class="'||v_ancho_columna1||' control-label">Correo Electr&oacute;nico:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                             <input placeholder="Ej: correo@email.com" class="form-control obligatorio" value="" name="txt_clie_e_mail" id="txt_clie_e_mail">
-                                                         </div>
-                                                     </div>
+                                                      <!-- GRUPO 1: DATOS PERSONALES -->
+                                                      <div style="background:#ffffff; border:1px solid #e7eaec; border-radius:6px; padding:20px 20px 10px 20px; margin-bottom:25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                                          <h4 style="margin-top:0; margin-bottom:18px; color:#769900; font-size:15px; font-weight:bold; border-bottom:1px solid #eee; padding-bottom:10px;">
+                                                              <i class="fa fa-user-circle-o" style="margin-right:8px; color:#769900;"></i> Datos Personales
+                                                          </h4>
 
-                                                     <div class="form-group">
-                                                         <label class="'||v_ancho_columna1||' control-label">Destinatario:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                             <input placeholder="Nombre de quien recibe el pedido" class="form-control obligatorio" value="" name="txt_clie_destinatario" id="txt_clie_destinatario">
-                                                             <input type="hidden" id="DATE" name="DATE" value="WOULD_LIKE_TO_ADD_DATE_HERE">
-                                                         </div>
-                                                         <label class="'||v_ancho_columna1||' control-label">Pa&iacute;s:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                             <div class="form-control" style="background:#f5f5f5; border:1px solid #e5e6e7; color:#555; cursor:default; display:flex; align-items:center; height:34px;">
-                                                                 <i class="fa fa-flag" style="margin-right:8px; color:#769900;"></i> Chile
-                                                             </div>
-                                                             <input type="hidden" name="txt_pais_codigo" id="txt_pais_codigo" value="38">
-                                                         </div>
-                                                     </div>
+                                                          <div class="form-group">
+                                                              <label class="'||v_ancho_columna1||' control-label">Nombres:</label>
+                                                              <div class="'||v_ancho_columna3||'">
+                                                                  <input placeholder="Ej: Juan" class="form-control obligatorio" value="" name="txt_clie_nombre_pila" id="txt_clie_nombre_pila">
+                                                                  <input type="hidden" class="form-control" value="03" name="txt_clie_canal_distribucion" id="txt_clie_canal_distribucion">
+                                                              </div>
+                                                              <label class="'||v_ancho_columna1||' control-label">Apellido Paterno:</label>
+                                                              <div class="'||v_ancho_columna3||'">
+                                                                  <input placeholder="Ej: P&eacute;rez" class="form-control obligatorio" value="" name="txt_clie_apellido_paterno" id="txt_clie_apellido_paterno">
+                                                              </div>
+                                                          </div>
 
-                                                     <div class="form-group">
-                                                         <label class="'||v_ancho_columna1||' control-label">Regi&oacute;n:</label>
-                                                         <div class="'||v_ancho_columna3||'" id="cont_select_nivel_region">
-                                                             <select class="chosen form-control m-b obligatorio" name="txt_regi_codigo" id="txt_regi_codigo">
-                                                                 <option value="-1">Seleccione regi&oacute;n</option>
-                                                             ');
-                                                             get_combos('regi_codigo', ' regi_descripcion', 'vec_cob03.pove_region', '');
-                                                             HTP.P('</select>
-                                                         </div>
-                                                         <div class="'||v_ancho_columna3||'" id="hide_otra_region" style="display:none;">
-                                                             <input placeholder="Ingrese regi&oacute;n" class="form-control" id="disp_region" name="disp_region" value="" readonly="readonly">
-                                                         </div>
+                                                          <div class="form-group">
+                                                              <label class="'||v_ancho_columna1||' control-label">Apellido Materno:</label>
+                                                              <div class="'||v_ancho_columna3||'">
+                                                                  <input placeholder="Ej: Gonz&aacute;lez" class="form-control obligatorio" value="" name="txt_clie_apellido_materno" id="txt_clie_apellido_materno">
+                                                              </div>
+                                                              <label class="'||v_ancho_columna1||' control-label">Correo Electr&oacute;nico:</label>
+                                                              <div class="'||v_ancho_columna3||'">
+                                                                  <input placeholder="Ej: correo@email.com" class="form-control obligatorio" value="" name="txt_clie_e_mail" id="txt_clie_e_mail">
+                                                              </div>
+                                                          </div>
 
-                                                         <label class="'||v_ancho_columna1||' control-label">Ciudad:</label>
-                                                         <div class="'||v_ancho_columna3||'" id="cont_select_nivel_ciudad">
-                                                             <select class="chosen form-control m-b obligatorio" name="txt_ciud_codigo" id="txt_ciud_codigo">
-                                                                 <option value="-1">Seleccione ciudad</option>
-                                                             </select>
-                                                         </div>
-                                                         <div class="'||v_ancho_columna3||'" id="hide_otra_ciudad" style="display:none;">
-                                                             <input placeholder="Ingrese ciudad" class="form-control" id="disp_ciudad" name="disp_ciudad" value="" readonly="readonly">
-                                                         </div>
-                                                     </div>
+                                                          <div class="form-group">
+                                                              <label class="'||v_ancho_columna1||' control-label">Destinatario:</label>
+                                                              <div class="col-lg-10">
+                                                                  <input placeholder="Nombre de la persona que recibir&aacute; el pedido" class="form-control obligatorio" value="" name="txt_clie_destinatario" id="txt_clie_destinatario">
+                                                                  <input type="hidden" id="DATE" name="DATE" value="WOULD_LIKE_TO_ADD_DATE_HERE">
+                                                              </div>
+                                                          </div>
+                                                      </div>
 
-                                                     <div class="form-group">
-                                                         <label class="'||v_ancho_columna1||' control-label">Direcci&oacute;n:</label>
-                                                         <div class="'||v_ancho_columna3||'">
-                                                             <input placeholder="Ej: Av. Principal 123" class="form-control obligatorio" value="" name="txt_clie_direccion" id="txt_clie_direccion">
-                                                        </div>
-                                                        <label class="'||v_ancho_columna1||' control-label">N&uacute;mero de Direcci&oacute;n:</label>
-                                                        <div class="'||v_ancho_columna3||'">
-                                                            <input placeholder="Ej: 1141" class="form-control obligatorio solonumero" value="" name="txt_clie_num_direccion" id="txt_clie_num_direccion">
-                                                        </div>
-                                                    </div>
+                                                      <!-- GRUPO 2: UBICACIÓN -->
+                                                      <div style="background:#ffffff; border:1px solid #e7eaec; border-radius:6px; padding:20px 20px 10px 20px; margin-bottom:25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                                          <h4 style="margin-top:0; margin-bottom:18px; color:#769900; font-size:15px; font-weight:bold; border-bottom:1px solid #eee; padding-bottom:10px;">
+                                                              <i class="fa fa-globe" style="margin-right:8px; color:#769900;"></i> Ubicaci&oacute;n
+                                                          </h4>
 
-                                                    <div class="form-group">
-                                                        <label class="'||v_ancho_columna1||' control-label">Tel&eacute;fono de Contacto:</label>
-                                                        <div class="'||v_ancho_columna3||'">
-                                                            <input placeholder="Ej: 912345678" class="form-control obligatorio solonumero" value="" name="txt_clie_tel_contacto" id="txt_clie_tel_contacto">
-                                                        </div>
-                                                        <label class="'||v_ancho_columna1||' control-label">Retiro en Tienda:</label>
-                                                        <div class="'||v_ancho_columna3||'">
-                                                            <div style="padding-top: 5px;">
-                                                                <input class="radio i-checks" value="S" name="txt_clie_retiro" id="txt_clie_retiro" type="radio" checked>&nbsp;<label class="control-label" style="font-weight:normal;">S&iacute;</label>
-                                                                &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                <input class="radio i-checks" value="N" name="txt_clie_retiro" id="txt_clie_retiro" type="radio">&nbsp;<label class="control-label" style="font-weight:normal;">No</label>
-                                                                
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                          <div class="form-group">
+                                                              <label class="'||v_ancho_columna1||' control-label">Pa&iacute;s:</label>
+                                                              <div class="'||v_ancho_columna3||'">
+                                                                  <div class="form-control" style="background:#f5f5f5; border:1px solid #e5e6e7; color:#555; cursor:default; display:flex; align-items:center; height:34px;">
+                                                                      <i class="fa fa-flag" style="margin-right:8px; color:#769900;"></i> Chile
+                                                                  </div>
+                                                                  <input type="hidden" name="txt_pais_codigo" id="txt_pais_codigo" value="38">
+                                                              </div>
+                                                              <label class="'||v_ancho_columna1||' control-label">Regi&oacute;n:</label>
+                                                              <div class="'||v_ancho_columna3||'" id="cont_select_nivel_region">
+                                                                  <select class="chosen form-control m-b obligatorio" name="txt_regi_codigo" id="txt_regi_codigo">
+                                                                      <option value="-1">Seleccione regi&oacute;n</option>
+                                                                  ');
+                                                                  get_combos('regi_codigo', ' regi_descripcion', 'vec_cob03.pove_region', '');
+                                                                  HTP.P('</select>
+                                                              </div>
+                                                              <div class="'||v_ancho_columna3||'" id="hide_otra_region" style="display:none;">
+                                                                  <input placeholder="Ingrese regi&oacute;n" class="form-control" id="disp_region" name="disp_region" value="" readonly="readonly">
+                                                              </div>
+                                                          </div>
 
-                                                    <div class="form-group">
-                                                        <div class="col-lg-offset-2 col-lg-10" id="mostrar_info" style="display: block;">
-                                                            <div style="background:#f0f7e0; border-left:4px solid #769900; border-radius:4px; padding:10px 14px; margin-bottom: 10px;">
-                                                                <p style="margin:0; color:#4a6400;"><i class="fa fa-map-marker" style="margin-right:6px;"></i><strong>Lugar de retiro:</strong> 1 Poniente #1141, frente a Plaza de Armas Nueva Casa Central.</p>
-                                                                <p style="margin:4px 0 0 22px; color:#4a6400;">Editorial, Universidad de Talca</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    </div>
-                                                    </div>
-                                                  </div>
-                                                    <div class="form-group" >
-                                                        <label class="<!--col-lg-offset-2--> '||v_ancho_columna3||' control-label">Documento Tributario:</label>
-                                                        <div class="'||v_ancho_columna3||'">
-                                                            <div class="tooltip-demo">
-                                                               <input class="radio i-checks "  value="0" name="txt_clie_bol_fac" id="txt_clie_bol_fac" type="radio" checked>&nbsp;<label class="control-label"  >Boleta</label>
-                                                               <input disabled class="radio i-checks disabled"  value="1" name="txt_clie_bol_fac" id="txt_clie_bol_fac" type="radio" >&nbsp;<label class="control-label" >Factura</label> <!--disabled-->
-                                                            </div>
-                                                        </div>
+                                                          <div class="form-group">
+                                                              <label class="'||v_ancho_columna1||' control-label">Ciudad:</label>
+                                                              <div class="'||v_ancho_columna3||'" id="cont_select_nivel_ciudad">
+                                                                  <select class="chosen form-control m-b obligatorio" name="txt_ciud_codigo" id="txt_ciud_codigo">
+                                                                      <option value="-1">Seleccione ciudad</option>
+                                                                  </select>
+                                                              </div>
+                                                              <div class="'||v_ancho_columna3||'" id="hide_otra_ciudad" style="display:none;">
+                                                                  <input placeholder="Ingrese ciudad" class="form-control" id="disp_ciudad" name="disp_ciudad" value="" readonly="readonly">
+                                                              </div>
+                                                          </div>
+                                                      </div>
+
+                                                      <!-- GRUPO 3: DESPACHO Y ENTREGA -->
+                                                      <div style="background:#ffffff; border:1px solid #e7eaec; border-radius:6px; padding:20px 20px 10px 20px; margin-bottom:25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                                          <h4 style="margin-top:0; margin-bottom:18px; color:#769900; font-size:15px; font-weight:bold; border-bottom:1px solid #eee; padding-bottom:10px;">
+                                                              <i class="fa fa-truck" style="margin-right:8px; color:#769900;"></i> Despacho y Entrega
+                                                          </h4>
+
+                                                          <div class="form-group">
+                                                              <label class="'||v_ancho_columna1||' control-label">Direcci&oacute;n:</label>
+                                                              <div class="'||v_ancho_columna3||'">
+                                                                  <input placeholder="Ej: Av. Principal 123" class="form-control obligatorio" value="" name="txt_clie_direccion" id="txt_clie_direccion">
+                                                              </div>
+                                                              <label class="'||v_ancho_columna1||' control-label">N&uacute;mero de Direcci&oacute;n:</label>
+                                                              <div class="'||v_ancho_columna3||'">
+                                                                  <input placeholder="Ej: 1141" class="form-control obligatorio solonumero" value="" name="txt_clie_num_direccion" id="txt_clie_num_direccion">
+                                                              </div>
+                                                          </div>
+
+                                                          <div class="form-group">
+                                                              <label class="'||v_ancho_columna1||' control-label">Tel&eacute;fono de Contacto:</label>
+                                                              <div class="'||v_ancho_columna3||'">
+                                                                  <input placeholder="Ej: 912345678" class="form-control obligatorio solonumero" value="" name="txt_clie_tel_contacto" id="txt_clie_tel_contacto">
+                                                              </div>
+                                                              <label class="'||v_ancho_columna1||' control-label">Retiro en Tienda:</label>
+                                                              <div class="'||v_ancho_columna3||'">
+                                                                  <div style="padding-top: 5px;">
+                                                                      <input class="radio i-checks" value="S" name="txt_clie_retiro" id="txt_clie_retiro" type="radio" checked>&nbsp;<label class="control-label" style="font-weight:normal;">S&iacute;</label>
+                                                                      &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                      <input class="radio i-checks" value="N" name="txt_clie_retiro" id="txt_clie_retiro" type="radio">&nbsp;<label class="control-label" style="font-weight:normal;">No</label>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+
+                                                          <div class="form-group" style="margin-bottom:0;">
+                                                              <div class="col-lg-offset-2 col-lg-10" id="mostrar_info" style="display: block; margin-bottom: 10px;">
+                                                                  <div style="background:#f0f7e0; border-left:4px solid #769900; border-radius:4px; padding:10px 14px;">
+                                                                      <p style="margin:0; color:#4a6400;"><i class="fa fa-map-marker" style="margin-right:6px;"></i><strong>Lugar de retiro:</strong> 1 Poniente #1141, frente a Plaza de Armas Nueva Casa Central.</p>
+                                                                      <p style="margin:4px 0 0 22px; color:#4a6400;">Editorial, Universidad de Talca</p>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+
+                                                      <!-- DOCUMENTO TRIBUTARIO CENTRADO -->
+                                                      <div class="form-group" style="margin-top: 25px; margin-bottom: 15px;">
+                                                          <div class="col-lg-12 text-center" style="display: flex; justify-content: center; align-items: center; gap: 15px; font-size: 14px;">
+                                                              <strong>Documento Tributario:</strong>
+                                                              <div class="tooltip-demo" style="display: inline-block;">
+                                                                 <input class="radio i-checks" value="0" name="txt_clie_bol_fac" id="txt_clie_bol_fac" type="radio" checked>&nbsp;<label class="control-label" style="font-weight:normal; margin-right:15px;">Boleta</label>
+                                                                 <input disabled class="radio i-checks disabled" value="1" name="txt_clie_bol_fac" id="txt_clie_bol_fac" type="radio">&nbsp;<label class="control-label" style="font-weight:normal;">Factura</label>
+                                                              </div>
+                                                          </div>
+                                                      </div>      </div>
                                                     </div>
                                                  <div class="form-group">
                                                    <div class=''hr-line-dashed''></div>
